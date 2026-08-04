@@ -96,7 +96,7 @@ function ProcessDetail() {
                 </div>
                 <Separator />
                 <div className="flex flex-wrap gap-1.5">
-                  {process.tags.map((tag) => (
+                  {process.tags.map((tag: string) => (
                     <Badge key={tag} variant="secondary" className="font-normal">
                       {tag}
                     </Badge>
@@ -115,7 +115,7 @@ function ProcessDetail() {
                 {process.attachments.length === 0 && (
                   <p className="text-sm text-muted-foreground">Sin archivos adjuntos.</p>
                 )}
-                {process.attachments.map((file) => (
+                {process.attachments.map((file: { name: string; size: string; type: string }) => (
                   <div
                     key={file.name}
                     className="flex items-center gap-3 rounded-md border border-border p-2.5"
