@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { categoryName, getProcess } from "@/data/knowledge";
+import { formatDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/proceso/$slug")({
   loader: ({ params }) => {
@@ -91,7 +92,7 @@ function ProcessDetail() {
                   <Clock className="size-4 text-muted-foreground" />
                   <span>
                     {process.duration} · actualizado el{" "}
-                    {new Date(process.updatedAt).toLocaleDateString("es-AR")}
+                    {formatDate(process.updatedAt)}
                   </span>
                 </div>
                 <Separator />
