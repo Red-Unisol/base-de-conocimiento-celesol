@@ -4,6 +4,7 @@ import { Clock, PlayCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { categoryName, type Process } from "@/data/knowledge";
+import { formatDate } from "@/lib/utils";
 
 export function ProcessCard({ process }: { process: Process }) {
   return (
@@ -36,7 +37,7 @@ export function ProcessCard({ process }: { process: Process }) {
           ))}
           <span className="ml-auto flex items-center gap-1 text-[11px] text-muted-foreground">
             <Clock className="size-3" />
-            {new Date(process.updatedAt).toLocaleDateString("es-AR")}
+            {formatDate(process.updatedAt)}
           </span>
         </CardFooter>
       </Link>
