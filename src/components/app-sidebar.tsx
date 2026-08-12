@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { BookOpen, Home, Upload } from "lucide-react";
 
@@ -13,10 +14,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { categories } from "@/data/knowledge";
+import { categoryIcon, fetchCategories } from "@/lib/kb";
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const categories = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+
 
   return (
     <Sidebar collapsible="icon">
@@ -54,20 +57,24 @@ export function AppSidebar() {
           <SidebarGroupLabel>Categorías de procesos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {categories.map((cat) => (
-                <SidebarMenuItem key={cat.slug}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === `/categoria/${cat.slug}`}
-                    tooltip={cat.name}
-                  >
-                    <Link to="/categoria/$slug" params={{ slug: cat.slug }}>
-                      <cat.icon />
-                      <span>{cat.name}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {(categories.data ?? []).map((cat) => {
+                const Icon = categoryIcon(cat.icon);
+                return (
+                  <SidebarMenuItem key={cat.slug}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === `/categoria/${cat.slug}`}
+                      tooltip={cat.name}
+                    >
+                      <Link to="/categoria/$slug" params={{ slug: cat.slug }}>
+                        <Icon />
+                        <span>{cat.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

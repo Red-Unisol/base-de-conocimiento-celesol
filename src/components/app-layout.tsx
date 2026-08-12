@@ -1,13 +1,23 @@
-import { Link } from "@tanstack/react-router";
-import { LogIn } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { LogOut } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { useSession } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 export function AppLayout({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
+  const { user } = useSession();
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    navigate({ to: "/auth" });
+  }
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -18,13 +28,16 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <span className="text-sm font-semibold tracking-tight">
               Base de Conocimiento Institucional
             </span>
-            <div className="ml-auto flex items-center gap-1">
+            <div className="ml-auto flex items-center gap-2">
+              {user?.email && (
+                <span className="hidden text-xs text-muted-foreground sm:inline">
+                  {user.email}
+                </span>
+              )}
               <ThemeToggle />
-              <Button asChild variant="outline" size="sm">
-                <Link to="/auth">
-                  <LogIn className="size-4" />
-                  Ingresar
-                </Link>
+              <Button variant="outline" size="sm" onClick={signOut}>
+                <LogOut className="size-4" />
+                Salir
               </Button>
             </div>
           </header>

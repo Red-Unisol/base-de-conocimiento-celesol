@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { buildAiAnswer, categoryName, searchProcesses, type Process } from "@/data/knowledge";
+import { buildAiAnswer, searchProcesses, type Process } from "@/lib/kb";
 
-export function AiSearch() {
+export function AiSearch({ processes }: { processes: Process[] }) {
   const [value, setValue] = useState("");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,9 +24,9 @@ export function AiSearch() {
     setLoading(true);
     setResults(null);
     window.setTimeout(() => {
-      setResults(searchProcesses(term));
+      setResults(searchProcesses(term, processes));
       setLoading(false);
-    }, 550);
+    }, 350);
   }
 
   return (
@@ -86,11 +86,9 @@ export function AiSearch() {
                     Respuesta generada
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-left">
                   {loading ? (
-                    <p className="text-sm text-muted-foreground">
-                      Analizando la documentación interna…
-                    </p>
+                    <p className="text-sm text-muted-foreground">Analizando la documentación…</p>
                   ) : (
                     <>
                       <div className="prose prose-sm max-w-none text-sm leading-relaxed text-foreground dark:prose-invert">
@@ -103,7 +101,7 @@ export function AiSearch() {
                           </p>
                           <ul className="space-y-1.5">
                             {results.slice(0, 3).map((p) => (
-                              <li key={p.slug}>
+                              <li key={p.id}>
                                 <Link
                                   to="/proceso/$slug"
                                   params={{ slug: p.slug }}
@@ -112,7 +110,7 @@ export function AiSearch() {
                                   <ArrowRight className="size-3.5 shrink-0" />
                                   <span className="font-medium">{p.title}</span>
                                   <Badge variant="secondary" className="font-normal">
-                                    {categoryName(p.category)}
+                                    {p.category?.name ?? "Sin categoría"}
                                   </Badge>
                                 </Link>
                               </li>
@@ -130,9 +128,9 @@ export function AiSearch() {
               {loading ? (
                 <p className="text-sm text-muted-foreground">Buscando…</p>
               ) : results && results.length > 0 ? (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 text-left sm:grid-cols-2">
                   {results.map((p) => (
-                    <ProcessCard key={p.slug} process={p} />
+                    <ProcessCard key={p.id} process={p} />
                   ))}
                 </div>
               ) : (
