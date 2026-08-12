@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { getCategory, processes } from "@/data/knowledge";
 
-export const Route = createFileRoute("/categoria/$slug")({
+export const Route = createFileRoute("/_authenticated/categoria/$slug")({
   loader: ({ params }) => {
     const category = getCategory(params.slug);
     if (!category) throw notFound();
