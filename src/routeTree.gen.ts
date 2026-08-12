@@ -9,20 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
-import { Route as ProcesoSlugRouteImport } from './routes/proceso.$slug'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedCategoriaSlugRouteImport } from './routes/_authenticated/categoria.$slug'
+import { Route as AuthenticatedProcesoSlugRouteImport } from './routes/_authenticated/proceso.$slug'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -30,75 +25,79 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
-  id: '/categoria/$slug',
-  path: '/categoria/$slug',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ProcesoSlugRoute = ProcesoSlugRouteImport.update({
-  id: '/proceso/$slug',
-  path: '/proceso/$slug',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCategoriaSlugRoute =
+  AuthenticatedCategoriaSlugRouteImport.update({
+    id: '/categoria/$slug',
+    path: '/categoria/$slug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProcesoSlugRoute =
+  AuthenticatedProcesoSlugRouteImport.update({
+    id: '/proceso/$slug',
+    path: '/proceso/$slug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
-  '/categoria/$slug': typeof CategoriaSlugRoute
-  '/proceso/$slug': typeof ProcesoSlugRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
+  '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/categoria/$slug': typeof CategoriaSlugRoute
-  '/proceso/$slug': typeof ProcesoSlugRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
+  '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/categoria/$slug': typeof CategoriaSlugRoute
-  '/proceso/$slug': typeof ProcesoSlugRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
+  '/_authenticated/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/auth' | '/categoria/$slug' | '/proceso/$slug'
+  fullPaths: '/' | '/auth' | '/admin' | '/categoria/$slug' | '/proceso/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/auth' | '/categoria/$slug' | '/proceso/$slug'
+  to: '/auth' | '/admin' | '/' | '/categoria/$slug' | '/proceso/$slug'
   id:
     | '__root__'
-    | '/'
-    | '/admin'
+    | '/_authenticated'
     | '/auth'
-    | '/categoria/$slug'
-    | '/proceso/$slug'
+    | '/_authenticated/admin'
+    | '/_authenticated/'
+    | '/_authenticated/categoria/$slug'
+    | '/_authenticated/proceso/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  CategoriaSlugRoute: typeof CategoriaSlugRoute
-  ProcesoSlugRoute: typeof ProcesoSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -108,29 +107,57 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/categoria/$slug': {
-      id: '/categoria/$slug'
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/categoria/$slug': {
+      id: '/_authenticated/categoria/$slug'
       path: '/categoria/$slug'
       fullPath: '/categoria/$slug'
-      preLoaderRoute: typeof CategoriaSlugRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedCategoriaSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/proceso/$slug': {
-      id: '/proceso/$slug'
+    '/_authenticated/proceso/$slug': {
+      id: '/_authenticated/proceso/$slug'
       path: '/proceso/$slug'
       fullPath: '/proceso/$slug'
-      preLoaderRoute: typeof ProcesoSlugRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProcesoSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedCategoriaSlugRoute: typeof AuthenticatedCategoriaSlugRoute
+  AuthenticatedProcesoSlugRoute: typeof AuthenticatedProcesoSlugRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedCategoriaSlugRoute: AuthenticatedCategoriaSlugRoute,
+  AuthenticatedProcesoSlugRoute: AuthenticatedProcesoSlugRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  CategoriaSlugRoute: CategoriaSlugRoute,
-  ProcesoSlugRoute: ProcesoSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -3,7 +3,7 @@ import { Clock, PlayCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { categoryName, type Process } from "@/data/knowledge";
+import type { Process } from "@/lib/kb";
 import { formatDate } from "@/lib/utils";
 
 export function ProcessCard({ process }: { process: Process }) {
@@ -16,13 +16,15 @@ export function ProcessCard({ process }: { process: Process }) {
       >
         <div className="relative flex aspect-video items-center justify-center bg-secondary">
           <PlayCircle className="size-10 text-muted-foreground transition-colors group-hover:text-brand" />
-          <span className="absolute bottom-2 right-2 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
-            {process.duration}
-          </span>
+          {process.duration_label && (
+            <span className="absolute bottom-2 right-2 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+              {process.duration_label}
+            </span>
+          )}
         </div>
         <CardHeader className="gap-1.5 pb-2">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-brand">
-            {categoryName(process.category)}
+            {process.category?.name ?? "Sin categoría"}
           </span>
           <CardTitle className="text-base leading-snug">{process.title}</CardTitle>
         </CardHeader>
@@ -37,7 +39,7 @@ export function ProcessCard({ process }: { process: Process }) {
           ))}
           <span className="ml-auto flex items-center gap-1 text-[11px] text-muted-foreground">
             <Clock className="size-3" />
-            {formatDate(process.updatedAt)}
+            {formatDate(process.updated_at)}
           </span>
         </CardFooter>
       </Link>
