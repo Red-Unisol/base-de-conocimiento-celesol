@@ -67,8 +67,9 @@ function AuthPage() {
       return;
     }
     toast.success("Cuenta creada", {
-      description: "Si se pide confirmación, revisá tu correo institucional.",
+      description: "Tu cuenta queda activa al instante, sin confirmación por correo.",
     });
+    navigate({ to: "/" });
   }
 
   return (
