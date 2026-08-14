@@ -354,6 +354,8 @@ function SingleUpload() {
 function BulkUpload() {
   const qc = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
+  const categories = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+  const [categoryId, setCategoryId] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [done, setDone] = useState(0);
   const [running, setRunning] = useState(false);
@@ -366,7 +368,7 @@ function BulkUpload() {
     setErrors([]);
     for (const file of files) {
       try {
-        await createDraftFromVideo(file);
+        await createDraftFromVideo(file, categoryId || null);
       } catch (e) {
         setErrors((prev) => [...prev, `${file.name}: ${(e as Error).message}`]);
       }
@@ -384,11 +386,27 @@ function BulkUpload() {
       <CardHeader>
         <CardTitle className="text-base">Carga masiva (modo migración)</CardTitle>
         <CardDescription>
-          Seleccioná varios MP4 de una vez. Cada archivo queda como borrador con el título tomado
-          del nombre del archivo; después completás categoría, etiquetas y documento.
+          Elegí la categoría del sector y seleccioná varios MP4 de una vez. Cada archivo queda como
+          borrador con el título tomado del nombre del archivo; después completás documento,
+          resumen y etiquetas.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="cat-masiva">Categoría de la tanda</Label>
+          <Select value={categoryId} onValueChange={setCategoryId}>
+            <SelectTrigger id="cat-masiva" className="sm:w-72">
+              <SelectValue placeholder="Seleccionar categoría" />
+            </SelectTrigger>
+            <SelectContent>
+              {(categories.data ?? []).map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <Input
           ref={inputRef}
           type="file"
@@ -424,6 +442,7 @@ function BulkUpload() {
     </Card>
   );
 }
+
 
 function MigrationPanel() {
   const qc = useQueryClient();
