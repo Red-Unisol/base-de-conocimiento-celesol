@@ -224,11 +224,11 @@ export async function createProcess(input: ProcessInput) {
 }
 
 /** Carga masiva: crea un borrador por cada MP4, con el título tomado del nombre del archivo. */
-export async function createDraftFromVideo(file: File) {
+export async function createDraftFromVideo(file: File, categoryId?: string | null) {
   const title = file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
   return createProcess({
     title: title || file.name,
-    categoryId: null,
+    categoryId: categoryId ?? null,
     summary: "",
     author: "",
     durationLabel: "",
@@ -240,10 +240,83 @@ export async function createDraftFromVideo(file: File) {
   });
 }
 
+export async function fetchProcessById(id: string): Promise<Process | null> {
+  const { data, error } = await supabase.from("processes").select(SELECT).eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data ? mapProcess(data) : null;
+}
+
+export async function fetchProcessTagIds(processId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("process_tags")
+    .select("tag_id")
+    .eq("process_id", processId);
+  if (error) throw error;
+  return (data ?? []).map((r) => r.tag_id);
+}
+
+export type ProcessUpdate = ProcessInput & { id: string };
+
+export async function updateProcess(input: ProcessUpdate) {
+  const patch: Record<string, unknown> = {
+    title: input.title,
+    summary: input.summary,
+    category_id: input.categoryId,
+    author: input.author,
+    duration_label: input.durationLabel,
+    video_source_url: input.videoSourceUrl || null,
+    document_markdown: input.documentMarkdown || null,
+    status: input.status,
+  };
+
+  if (input.videoFile) patch.video_path = await uploadFile(VIDEO_BUCKET, input.id, input.videoFile);
+  if (input.documentFile)
+    patch.document_path = await uploadFile(DOC_BUCKET, input.id, input.documentFile);
+
+  const { error } = await supabase.from("processes").update(patch).eq("id", input.id);
+  if (error) throw error;
+
+  const { error: delErr } = await supabase
+    .from("process_tags")
+    .delete()
+    .eq("process_id", input.id);
+  if (delErr) throw delErr;
+  if (input.tagIds.length) {
+    const { error: tagErr } = await supabase
+      .from("process_tags")
+      .insert(input.tagIds.map((tag_id) => ({ process_id: input.id, tag_id })));
+    if (tagErr) throw tagErr;
+  }
+
+  await addAttachments(input.id, input.attachmentFiles ?? []);
+  return { id: input.id };
+}
+
+export async function addAttachments(processId: string, files: File[]) {
+  for (const file of files) {
+    const path = await uploadFile(ATTACHMENT_BUCKET, processId, file);
+    const { error } = await supabase.from("attachments").insert({
+      process_id: processId,
+      name: file.name,
+      path,
+      size_bytes: file.size,
+      file_type: (file.name.split(".").pop() ?? "").toUpperCase().slice(0, 5),
+    });
+    if (error) throw error;
+  }
+}
+
+export async function deleteAttachment(attachment: { id: string; path: string }) {
+  const { error } = await supabase.from("attachments").delete().eq("id", attachment.id);
+  if (error) throw error;
+  await supabase.storage.from(ATTACHMENT_BUCKET).remove([attachment.path]);
+}
+
 export async function deleteProcess(id: string) {
   const { error } = await supabase.from("processes").delete().eq("id", id);
   if (error) throw error;
 }
+
 
 export function isComplete(p: Process) {
   return Boolean(
