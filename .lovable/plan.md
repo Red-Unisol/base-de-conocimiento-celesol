@@ -10,13 +10,13 @@ Tu cuenta `alquimia.laboratories@gmail.com` existe, está confirmada y tiene rol
 
 ## Contraseña a usar
 
-Salvo que indiques otra, se usa una temporal segura: `Unisol2026!Base` — la podés cambiar después desde el ingreso.
+`Prueba1@`, tal como pediste, hasta terminar el proyecto.
 
 ## Detalle técnico
 
 - Actualización de la credencial vía Auth Admin API del backend gestionado (no se toca el esquema `auth` con SQL directo).
 - Sin cambios en RLS, buckets ni en el resto de la app.
 
-## Nota
+## Nota de seguridad
 
-Si preferís otra contraseña, decímela y la uso en lugar de la temporal.
+Es una contraseña corta y simple: adecuada mientras el proyecto es privado, pero conviene cambiarla por una fuerte antes de abrir la app al resto de la mutual.
