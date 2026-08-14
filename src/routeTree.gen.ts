@@ -15,6 +15,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedCategoriaSlugRouteImport } from './routes/_authenticated/categoria.$slug'
 import { Route as AuthenticatedProcesoSlugRouteImport } from './routes/_authenticated/proceso.$slug'
+import { Route as AuthenticatedAdminProcesoIdRouteImport } from './routes/_authenticated/admin.proceso.$id'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -47,6 +48,12 @@ const AuthenticatedProcesoSlugRoute =
     path: '/proceso/$slug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminProcesoIdRoute =
+  AuthenticatedAdminProcesoIdRouteImport.update({
+    id: '/admin/proceso/$id',
+    path: '/admin/proceso/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByFullPath {
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -61,6 +69,7 @@ export interface FileRoutesByTo {
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,12 +79,25 @@ export interface FileRoutesById {
   '/_authenticated/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/_authenticated/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/categoria/$slug' | '/proceso/$slug' | '/admin/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/categoria/$slug'
+    | '/proceso/$slug'
+    | '/admin/'
+    | '/admin/proceso/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/' | '/categoria/$slug' | '/proceso/$slug' | '/admin'
+  to:
+    | '/auth'
+    | '/'
+    | '/categoria/$slug'
+    | '/proceso/$slug'
+    | '/admin'
+    | '/admin/proceso/$id'
   id:
     | '__root__'
     | '/_authenticated'
@@ -84,6 +106,7 @@ export interface FileRouteTypes {
     | '/_authenticated/categoria/$slug'
     | '/_authenticated/proceso/$slug'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/proceso/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -135,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProcesoSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/proceso/$id': {
+      id: '/_authenticated/admin/proceso/$id'
+      path: '/admin/proceso/$id'
+      fullPath: '/admin/proceso/$id'
+      preLoaderRoute: typeof AuthenticatedAdminProcesoIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -143,6 +173,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCategoriaSlugRoute: typeof AuthenticatedCategoriaSlugRoute
   AuthenticatedProcesoSlugRoute: typeof AuthenticatedProcesoSlugRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminProcesoIdRoute: typeof AuthenticatedAdminProcesoIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -150,6 +181,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCategoriaSlugRoute: AuthenticatedCategoriaSlugRoute,
   AuthenticatedProcesoSlugRoute: AuthenticatedProcesoSlugRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminProcesoIdRoute: AuthenticatedAdminProcesoIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
