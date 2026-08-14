@@ -34,7 +34,7 @@ import {
 
 const TARGET = 55;
 
-export const Route = createFileRoute("/_authenticated/admin")({
+export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
     meta: [
       { title: "Cargar material — Base de Conocimiento UNISOL" },
