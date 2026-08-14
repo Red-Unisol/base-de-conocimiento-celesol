@@ -446,12 +446,23 @@ function BulkUpload() {
 
 function MigrationPanel() {
   const qc = useQueryClient();
+  const categories = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
   const processes = useQuery({
     queryKey: ["processes", "all"],
     queryFn: () => fetchProcesses({ includeDrafts: true }),
   });
-  const list = processes.data ?? [];
-  const complete = list.filter(isComplete).length;
+  const [categorySlug, setCategorySlug] = useState("todas");
+  const [status, setStatus] = useState("todos");
+
+  const all = processes.data ?? [];
+  const list = all.filter((p) => {
+    if (categorySlug !== "todas" && p.category?.slug !== categorySlug) return false;
+    if (status === "completos") return isComplete(p);
+    if (status === "pendientes") return !isComplete(p);
+    if (status === "published" || status === "draft") return p.status === status;
+    return true;
+  });
+  const complete = all.filter(isComplete).length;
 
   const remove = useMutation({
     mutationFn: deleteProcess,
@@ -490,17 +501,55 @@ function MigrationPanel() {
       <CardHeader>
         <CardTitle className="text-base">Panel de migración</CardTitle>
         <CardDescription>
-          {complete} de {TARGET} procesos migrados por completo · {list.length} cargados en total.
+          {complete} de {TARGET} procesos migrados por completo · {all.length} cargados en total.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Progress value={(complete / TARGET) * 100} />
-        <Button variant="outline" size="sm" onClick={exportCsv} disabled={list.length === 0}>
-          Exportar inventario (CSV)
-        </Button>
+
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="filtro-cat">Categoría</Label>
+            <Select value={categorySlug} onValueChange={setCategorySlug}>
+              <SelectTrigger id="filtro-cat" className="w-56">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todas">Todas</SelectItem>
+                {(categories.data ?? []).map((c) => (
+                  <SelectItem key={c.id} value={c.slug}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="filtro-estado">Estado</Label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger id="filtro-estado" className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="pendientes">Incompletos</SelectItem>
+                <SelectItem value="completos">Completos</SelectItem>
+                <SelectItem value="draft">Borradores</SelectItem>
+                <SelectItem value="published">Publicados</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button variant="outline" size="sm" onClick={exportCsv} disabled={list.length === 0}>
+            Exportar inventario (CSV)
+          </Button>
+        </div>
 
         {list.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Todavía no hay procesos cargados.</p>
+          <p className="text-sm text-muted-foreground">
+            {all.length === 0
+              ? "Todavía no hay procesos cargados."
+              : "Ningún proceso coincide con los filtros."}
+          </p>
         ) : (
           <ul className="divide-y divide-border rounded-md border border-border">
             {list.map((p) => {
@@ -521,10 +570,17 @@ function MigrationPanel() {
                       {p.title}
                     </Link>
                     <p className="text-xs text-muted-foreground">
+                      {p.category?.name ? `${p.category.name} · ` : ""}
                       {p.status === "published" ? "Publicado" : "Borrador"}
                       {missing.length > 0 ? ` · falta: ${missing.join(", ")}` : " · completo"}
                     </p>
                   </div>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/admin/proceso/$id" params={{ id: p.id }}>
+                      <Pencil className="size-3.5" />
+                      Completar
+                    </Link>
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -539,6 +595,7 @@ function MigrationPanel() {
           </ul>
         )}
       </CardContent>
+
     </Card>
   );
 }
