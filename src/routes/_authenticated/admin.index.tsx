@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertCircle, CheckCircle2, Loader2, Trash2, Upload } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, Pencil, Trash2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -34,7 +34,7 @@ import {
 
 const TARGET = 55;
 
-export const Route = createFileRoute("/_authenticated/admin")({
+export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
     meta: [
       { title: "Cargar material — Base de Conocimiento UNISOL" },
@@ -354,6 +354,8 @@ function SingleUpload() {
 function BulkUpload() {
   const qc = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
+  const categories = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+  const [categoryId, setCategoryId] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [done, setDone] = useState(0);
   const [running, setRunning] = useState(false);
@@ -366,7 +368,7 @@ function BulkUpload() {
     setErrors([]);
     for (const file of files) {
       try {
-        await createDraftFromVideo(file);
+        await createDraftFromVideo(file, categoryId || null);
       } catch (e) {
         setErrors((prev) => [...prev, `${file.name}: ${(e as Error).message}`]);
       }
@@ -384,11 +386,27 @@ function BulkUpload() {
       <CardHeader>
         <CardTitle className="text-base">Carga masiva (modo migración)</CardTitle>
         <CardDescription>
-          Seleccioná varios MP4 de una vez. Cada archivo queda como borrador con el título tomado
-          del nombre del archivo; después completás categoría, etiquetas y documento.
+          Elegí la categoría del sector y seleccioná varios MP4 de una vez. Cada archivo queda como
+          borrador con el título tomado del nombre del archivo; después completás documento,
+          resumen y etiquetas.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="cat-masiva">Categoría de la tanda</Label>
+          <Select value={categoryId} onValueChange={setCategoryId}>
+            <SelectTrigger id="cat-masiva" className="sm:w-72">
+              <SelectValue placeholder="Seleccionar categoría" />
+            </SelectTrigger>
+            <SelectContent>
+              {(categories.data ?? []).map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <Input
           ref={inputRef}
           type="file"
@@ -425,14 +443,26 @@ function BulkUpload() {
   );
 }
 
+
 function MigrationPanel() {
   const qc = useQueryClient();
+  const categories = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
   const processes = useQuery({
     queryKey: ["processes", "all"],
     queryFn: () => fetchProcesses({ includeDrafts: true }),
   });
-  const list = processes.data ?? [];
-  const complete = list.filter(isComplete).length;
+  const [categorySlug, setCategorySlug] = useState("todas");
+  const [status, setStatus] = useState("todos");
+
+  const all = processes.data ?? [];
+  const list = all.filter((p) => {
+    if (categorySlug !== "todas" && p.category?.slug !== categorySlug) return false;
+    if (status === "completos") return isComplete(p);
+    if (status === "pendientes") return !isComplete(p);
+    if (status === "published" || status === "draft") return p.status === status;
+    return true;
+  });
+  const complete = all.filter(isComplete).length;
 
   const remove = useMutation({
     mutationFn: deleteProcess,
@@ -471,17 +501,55 @@ function MigrationPanel() {
       <CardHeader>
         <CardTitle className="text-base">Panel de migración</CardTitle>
         <CardDescription>
-          {complete} de {TARGET} procesos migrados por completo · {list.length} cargados en total.
+          {complete} de {TARGET} procesos migrados por completo · {all.length} cargados en total.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Progress value={(complete / TARGET) * 100} />
-        <Button variant="outline" size="sm" onClick={exportCsv} disabled={list.length === 0}>
-          Exportar inventario (CSV)
-        </Button>
+
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="filtro-cat">Categoría</Label>
+            <Select value={categorySlug} onValueChange={setCategorySlug}>
+              <SelectTrigger id="filtro-cat" className="w-56">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todas">Todas</SelectItem>
+                {(categories.data ?? []).map((c) => (
+                  <SelectItem key={c.id} value={c.slug}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="filtro-estado">Estado</Label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger id="filtro-estado" className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="pendientes">Incompletos</SelectItem>
+                <SelectItem value="completos">Completos</SelectItem>
+                <SelectItem value="draft">Borradores</SelectItem>
+                <SelectItem value="published">Publicados</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button variant="outline" size="sm" onClick={exportCsv} disabled={list.length === 0}>
+            Exportar inventario (CSV)
+          </Button>
+        </div>
 
         {list.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Todavía no hay procesos cargados.</p>
+          <p className="text-sm text-muted-foreground">
+            {all.length === 0
+              ? "Todavía no hay procesos cargados."
+              : "Ningún proceso coincide con los filtros."}
+          </p>
         ) : (
           <ul className="divide-y divide-border rounded-md border border-border">
             {list.map((p) => {
@@ -502,10 +570,17 @@ function MigrationPanel() {
                       {p.title}
                     </Link>
                     <p className="text-xs text-muted-foreground">
+                      {p.category?.name ? `${p.category.name} · ` : ""}
                       {p.status === "published" ? "Publicado" : "Borrador"}
                       {missing.length > 0 ? ` · falta: ${missing.join(", ")}` : " · completo"}
                     </p>
                   </div>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/admin/proceso/$id" params={{ id: p.id }}>
+                      <Pencil className="size-3.5" />
+                      Completar
+                    </Link>
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -520,6 +595,7 @@ function MigrationPanel() {
           </ul>
         )}
       </CardContent>
+
     </Card>
   );
 }
