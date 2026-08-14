@@ -258,7 +258,18 @@ export async function fetchProcessTagIds(processId: string): Promise<string[]> {
 export type ProcessUpdate = ProcessInput & { id: string };
 
 export async function updateProcess(input: ProcessUpdate) {
-  const patch: Record<string, unknown> = {
+  const patch: {
+    title: string;
+    summary: string;
+    category_id: string | null;
+    author: string;
+    duration_label: string;
+    video_source_url: string | null;
+    document_markdown: string | null;
+    status: string;
+    video_path?: string;
+    document_path?: string;
+  } = {
     title: input.title,
     summary: input.summary,
     category_id: input.categoryId,
@@ -269,9 +280,11 @@ export async function updateProcess(input: ProcessUpdate) {
     status: input.status,
   };
 
-  if (input.videoFile) patch.video_path = await uploadFile(VIDEO_BUCKET, input.id, input.videoFile);
+  if (input.videoFile)
+    patch.video_path = await uploadFile(VIDEO_BUCKET, input.id, input.videoFile);
   if (input.documentFile)
     patch.document_path = await uploadFile(DOC_BUCKET, input.id, input.documentFile);
+
 
   const { error } = await supabase.from("processes").update(patch).eq("id", input.id);
   if (error) throw error;
