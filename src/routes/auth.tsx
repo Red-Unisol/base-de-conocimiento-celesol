@@ -177,16 +177,28 @@ function Fields({
       </div>
       <div className="space-y-2">
         <Label htmlFor={`pass-${autoComplete}`}>Contraseña</Label>
-        <Input
-          id={`pass-${autoComplete}`}
-          type="password"
-          required
-          minLength={6}
-          autoComplete={autoComplete}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="relative">
+          <Input
+            id={`pass-${autoComplete}`}
+            type={show ? "text" : "password"}
+            required
+            minLength={6}
+            className="pr-10"
+            autoComplete={autoComplete}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => setShow((v) => !v)}
+            aria-label={show ? "Ocultar contraseña" : "Mostrar contraseña"}
+            className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
+        </div>
       </div>
+
     </>
   );
 }

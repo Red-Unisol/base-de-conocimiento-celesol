@@ -5,6 +5,7 @@ import {
   Folder,
   Inbox,
   LineChart,
+  Megaphone,
   PiggyBank,
   type LucideIcon,
 } from "lucide-react";
@@ -22,8 +23,10 @@ const ICONS: Record<string, LucideIcon> = {
   Inbox,
   LineChart,
   Briefcase,
+  Megaphone,
   Folder,
 };
+
 
 export function categoryIcon(name: string | null | undefined): LucideIcon {
   return ICONS[name ?? "Folder"] ?? Folder;
