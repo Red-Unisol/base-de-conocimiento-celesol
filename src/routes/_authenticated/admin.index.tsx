@@ -239,21 +239,8 @@ function SingleUpload() {
               placeholder="Ej: Sector Contabilidad"
             />
           </div>
-          <div className="space-y-2">
-            <Label>Etiquetas</Label>
-            <div className="flex flex-wrap gap-2">
-              {(tags.data ?? []).map((tag) => (
-                <button key={tag.id} type="button" onClick={() => toggleTag(tag.id)}>
-                  <Badge
-                    variant={tagIds.includes(tag.id) ? "default" : "outline"}
-                    className="cursor-pointer font-normal"
-                  >
-                    {tag.name}
-                  </Badge>
-                </button>
-              ))}
-            </div>
-          </div>
+          <TagPicker tags={tags.data ?? []} tagIds={tagIds} onToggle={toggleTag} />
+
         </CardContent>
       </Card>
 
