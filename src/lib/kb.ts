@@ -108,6 +108,26 @@ export async function fetchTags(): Promise<Tag[]> {
   return data as Tag[];
 }
 
+export async function createTag(name: string): Promise<Tag> {
+  const clean = name.trim();
+  const slug = slugify(clean);
+  const { data: existing } = await supabase
+    .from("tags")
+    .select("id, slug, name")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (existing) return existing as Tag;
+
+  const { data, error } = await supabase
+    .from("tags")
+    .insert({ slug, name: clean })
+    .select("id, slug, name")
+    .single();
+  if (error) throw error;
+  return data as Tag;
+}
+
+
 export async function fetchProcesses(options?: {
   categorySlug?: string;
   includeDrafts?: boolean;
