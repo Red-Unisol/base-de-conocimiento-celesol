@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { BookOpen, Loader2 } from "lucide-react";
+import { BookOpen, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -161,7 +161,9 @@ function Fields({
   setPassword: (v: string) => void;
   autoComplete: string;
 }) {
+  const [show, setShow] = useState(false);
   return (
+
     <>
       <div className="space-y-2">
         <Label htmlFor={`email-${autoComplete}`}>Correo institucional</Label>
