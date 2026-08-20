@@ -5,6 +5,7 @@ import {
   Folder,
   Inbox,
   LineChart,
+  Megaphone,
   PiggyBank,
   type LucideIcon,
 } from "lucide-react";
@@ -22,8 +23,10 @@ const ICONS: Record<string, LucideIcon> = {
   Inbox,
   LineChart,
   Briefcase,
+  Megaphone,
   Folder,
 };
+
 
 export function categoryIcon(name: string | null | undefined): LucideIcon {
   return ICONS[name ?? "Folder"] ?? Folder;
@@ -107,6 +110,26 @@ export async function fetchTags(): Promise<Tag[]> {
   if (error) throw error;
   return data as Tag[];
 }
+
+export async function createTag(name: string): Promise<Tag> {
+  const clean = name.trim();
+  const slug = slugify(clean);
+  const { data: existing } = await supabase
+    .from("tags")
+    .select("id, slug, name")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (existing) return existing as Tag;
+
+  const { data, error } = await supabase
+    .from("tags")
+    .insert({ slug, name: clean })
+    .select("id, slug, name")
+    .single();
+  if (error) throw error;
+  return data as Tag;
+}
+
 
 export async function fetchProcesses(options?: {
   categorySlug?: string;
