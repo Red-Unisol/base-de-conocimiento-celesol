@@ -138,7 +138,6 @@ function EditForm() {
       toast.success(vars.status === "published" ? "Proceso publicado" : "Borrador guardado");
       qc.invalidateQueries({ queryKey: ["processes"] });
       qc.invalidateQueries({ queryKey: ["process", id] });
-      setVideoFile(null);
       setDocFile(null);
       setAttachments([]);
       if (vars.status === "published") navigate({ to: "/admin" });

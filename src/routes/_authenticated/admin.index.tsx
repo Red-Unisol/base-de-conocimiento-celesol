@@ -148,7 +148,6 @@ function SingleUpload() {
       setSourceUrl("");
       setSummary("");
       setDoc("");
-      setVideoFile(null);
       setDocFile(null);
       setAttachments([]);
     },
