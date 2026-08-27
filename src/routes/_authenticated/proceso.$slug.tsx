@@ -56,6 +56,10 @@ function bytes(n: number) {
   return `${v.toFixed(v < 10 && i > 0 ? 1 : 0)} ${units[i]}`;
 }
 
+function isPdf(path: string) {
+  return path.toLowerCase().endsWith(".pdf");
+}
+
 function ProcessDetail() {
   const { slug } = Route.useParams();
   const query = useQuery({ queryKey: ["process", slug], queryFn: () => fetchProcess(slug) });
