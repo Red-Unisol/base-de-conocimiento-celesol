@@ -167,11 +167,15 @@ function ProcessDetail() {
                 </div>
               ) : process.document_path ? (
                 doc.data ? (
-                  <iframe
-                    src={doc.data}
-                    title={`Documento del proceso: ${process.title}`}
-                    className="mt-4 h-[70vh] w-full rounded-xl border border-border bg-card"
-                  />
+                  isPdf(process.document_path) ? (
+                    <PdfViewer url={doc.data} title={process.title} />
+                  ) : (
+                    <iframe
+                      src={doc.data}
+                      title={`Documento del proceso: ${process.title}`}
+                      className="mt-4 h-[70vh] w-full rounded-xl border border-border bg-card"
+                    />
+                  )
                 ) : (
                   <Skeleton className="mt-4 h-[70vh] w-full" />
                 )
