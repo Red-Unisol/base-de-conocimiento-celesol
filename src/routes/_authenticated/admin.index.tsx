@@ -250,30 +250,25 @@ function SingleUpload() {
         <CardHeader>
           <CardTitle className="text-base">Contenido</CardTitle>
           <CardDescription>
-            El MP4 propio es la fuente principal de reproducción; el enlace de Trupeer queda como
-            referencia.
+            El video se reproduce desde Google Drive mediante un enlace embebido seguro.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="video">Video MP4</Label>
-            <Input
-              id="video"
-              type="file"
-              accept="video/mp4,video/*"
-              onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="embed">URL original de Trupeer (opcional)</Label>
+            <Label htmlFor="embed">URL del video en Google Drive</Label>
             <Input
               id="embed"
               value={sourceUrl}
               maxLength={2000}
               onChange={(e) => setSourceUrl(e.target.value)}
-              placeholder="https://www.trupeer.ai/embed/..."
+              placeholder="https://drive.google.com/file/d/.../view"
             />
+            <p className="text-xs text-muted-foreground">
+              Pegá el enlace del archivo de Drive. Debe estar compartido como &quot;cualquiera con
+              el enlace puede ver&quot;.
+            </p>
           </div>
+
           <div className="space-y-2">
             <Label htmlFor="docfile">Documento (PDF o DOCX)</Label>
             <Input
