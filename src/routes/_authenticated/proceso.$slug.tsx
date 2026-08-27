@@ -13,6 +13,7 @@ import {
   ATTACHMENT_BUCKET,
   DOC_BUCKET,
   VIDEO_BUCKET,
+  driveEmbedUrl,
   fetchProcess,
   signedUrl,
 } from "@/lib/kb";
@@ -65,6 +66,14 @@ function ProcessDetail() {
     queryFn: () => signedUrl(VIDEO_BUCKET, process!.video_path!),
   });
 
+  const doc = useQuery({
+    queryKey: ["signed", DOC_BUCKET, process?.document_path],
+    enabled: Boolean(process?.document_path) && !process?.document_markdown,
+    queryFn: () => signedUrl(DOC_BUCKET, process!.document_path!, 3600),
+  });
+
+  const driveUrl = driveEmbedUrl(process?.video_source_url);
+
   async function download(bucket: string, path: string, name: string) {
     const url = await signedUrl(bucket, path, 120);
     const a = document.createElement("a");
@@ -73,6 +82,7 @@ function ProcessDetail() {
     a.rel = "noreferrer";
     a.click();
   }
+
 
   if (query.isLoading) {
     return (
@@ -128,11 +138,13 @@ function ProcessDetail() {
                     className="size-full"
                     title={`Video del proceso: ${process.title}`}
                   />
-                ) : process.video_source_url ? (
+                ) : driveUrl ? (
                   <iframe
-                    src={process.video_source_url}
-                    title={`Video Trupeer: ${process.title}`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen"
+                    src={driveUrl}
+                    title={`Video del proceso: ${process.title}`}
+                    referrerPolicy="no-referrer"
+                    sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+                    allow="autoplay; encrypted-media; fullscreen"
                     allowFullScreen
                     className="size-full"
                   />
@@ -154,21 +166,21 @@ function ProcessDetail() {
                   <ReactMarkdown>{process.document_markdown}</ReactMarkdown>
                 </div>
               ) : process.document_path ? (
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  onClick={() =>
-                    download(DOC_BUCKET, process.document_path!, `${process.slug}-documento`)
-                  }
-                >
-                  <Download className="size-4" />
-                  Descargar documento
-                </Button>
+                doc.data ? (
+                  <iframe
+                    src={doc.data}
+                    title={`Documento del proceso: ${process.title}`}
+                    className="mt-4 h-[70vh] w-full rounded-xl border border-border bg-card"
+                  />
+                ) : (
+                  <Skeleton className="mt-4 h-[70vh] w-full" />
+                )
               ) : (
                 <p className="mt-4 text-sm text-muted-foreground">
                   Todavía no se cargó la guía escrita de este proceso.
                 </p>
               )}
+
             </section>
           </div>
 
@@ -193,19 +205,6 @@ function ProcessDetail() {
                     {formatDate(process.updated_at)}
                   </span>
                 </div>
-                {process.video_path && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() =>
-                      download(VIDEO_BUCKET, process.video_path!, `${process.slug}.mp4`)
-                    }
-                  >
-                    <Download className="size-4" />
-                    Descargar video
-                  </Button>
-                )}
                 {process.tags.length > 0 && (
                   <>
                     <Separator />

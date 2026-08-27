@@ -105,7 +105,6 @@ function EditForm() {
   const [sourceUrl, setSourceUrl] = useState("");
   const [summary, setSummary] = useState("");
   const [doc, setDoc] = useState("");
-  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [docFile, setDocFile] = useState<File | null>(null);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -139,7 +138,6 @@ function EditForm() {
       toast.success(vars.status === "published" ? "Proceso publicado" : "Borrador guardado");
       qc.invalidateQueries({ queryKey: ["processes"] });
       qc.invalidateQueries({ queryKey: ["process", id] });
-      setVideoFile(null);
       setDocFile(null);
       setAttachments([]);
       if (vars.status === "published") navigate({ to: "/admin" });
@@ -181,7 +179,7 @@ function EditForm() {
       videoSourceUrl: sourceUrl.trim(),
       documentMarkdown: doc.trim(),
       status,
-      videoFile,
+
       documentFile: docFile,
       attachmentFiles: attachments,
     });
@@ -288,31 +286,27 @@ function EditForm() {
             <CardHeader>
               <CardTitle className="text-base">Contenido</CardTitle>
               <CardDescription>
-                Subí un archivo sólo si querés reemplazar el actual.
+                El video se reproduce desde Google Drive mediante un enlace embebido seguro.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="video">
-                  Video MP4 {data.video_path ? "(ya cargado)" : "(falta)"}
+                <Label htmlFor="embed">
+                  URL del video en Google Drive{" "}
+                  {data.video_path ? "(hay un MP4 cargado que se sigue usando)" : ""}
                 </Label>
-                <Input
-                  id="video"
-                  type="file"
-                  accept="video/mp4,video/*"
-                  onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="embed">URL original de Trupeer (opcional)</Label>
                 <Input
                   id="embed"
                   value={sourceUrl}
                   maxLength={2000}
                   onChange={(e) => setSourceUrl(e.target.value)}
-                  placeholder="https://www.trupeer.ai/embed/..."
+                  placeholder="https://drive.google.com/file/d/.../view"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Debe estar compartido como &quot;cualquiera con el enlace puede ver&quot;.
+                </p>
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="docfile">
                   Documento (PDF o DOCX) {data.document_path ? "(ya cargado)" : "(falta)"}
