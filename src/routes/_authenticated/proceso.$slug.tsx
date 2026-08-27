@@ -65,6 +65,14 @@ function ProcessDetail() {
     queryFn: () => signedUrl(VIDEO_BUCKET, process!.video_path!),
   });
 
+  const doc = useQuery({
+    queryKey: ["signed", DOC_BUCKET, process?.document_path],
+    enabled: Boolean(process?.document_path) && !process?.document_markdown,
+    queryFn: () => signedUrl(DOC_BUCKET, process!.document_path!, 3600),
+  });
+
+  const driveUrl = driveEmbedUrl(process?.video_source_url);
+
   async function download(bucket: string, path: string, name: string) {
     const url = await signedUrl(bucket, path, 120);
     const a = document.createElement("a");
@@ -73,6 +81,7 @@ function ProcessDetail() {
     a.rel = "noreferrer";
     a.click();
   }
+
 
   if (query.isLoading) {
     return (
