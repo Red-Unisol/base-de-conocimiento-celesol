@@ -105,7 +105,6 @@ function EditForm() {
   const [sourceUrl, setSourceUrl] = useState("");
   const [summary, setSummary] = useState("");
   const [doc, setDoc] = useState("");
-  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [docFile, setDocFile] = useState<File | null>(null);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -181,7 +180,7 @@ function EditForm() {
       videoSourceUrl: sourceUrl.trim(),
       documentMarkdown: doc.trim(),
       status,
-      videoFile,
+
       documentFile: docFile,
       attachmentFiles: attachments,
     });
