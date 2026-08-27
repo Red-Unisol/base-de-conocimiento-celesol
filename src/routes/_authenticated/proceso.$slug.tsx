@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, Download, FileText, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 import { AppLayout } from "@/components/app-layout";
+import { PdfViewer } from "@/components/pdf-viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
