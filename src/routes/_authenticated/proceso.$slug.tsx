@@ -137,11 +137,13 @@ function ProcessDetail() {
                     className="size-full"
                     title={`Video del proceso: ${process.title}`}
                   />
-                ) : process.video_source_url ? (
+                ) : driveUrl ? (
                   <iframe
-                    src={process.video_source_url}
-                    title={`Video Trupeer: ${process.title}`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen"
+                    src={driveUrl}
+                    title={`Video del proceso: ${process.title}`}
+                    referrerPolicy="no-referrer"
+                    sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+                    allow="autoplay; encrypted-media; fullscreen"
                     allowFullScreen
                     className="size-full"
                   />
@@ -163,21 +165,21 @@ function ProcessDetail() {
                   <ReactMarkdown>{process.document_markdown}</ReactMarkdown>
                 </div>
               ) : process.document_path ? (
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  onClick={() =>
-                    download(DOC_BUCKET, process.document_path!, `${process.slug}-documento`)
-                  }
-                >
-                  <Download className="size-4" />
-                  Descargar documento
-                </Button>
+                doc.data ? (
+                  <iframe
+                    src={doc.data}
+                    title={`Documento del proceso: ${process.title}`}
+                    className="mt-4 h-[70vh] w-full rounded-xl border border-border bg-card"
+                  />
+                ) : (
+                  <Skeleton className="mt-4 h-[70vh] w-full" />
+                )
               ) : (
                 <p className="mt-4 text-sm text-muted-foreground">
                   Todavía no se cargó la guía escrita de este proceso.
                 </p>
               )}
+
             </section>
           </div>
 
