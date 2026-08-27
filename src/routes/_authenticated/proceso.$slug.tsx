@@ -13,6 +13,7 @@ import {
   ATTACHMENT_BUCKET,
   DOC_BUCKET,
   VIDEO_BUCKET,
+  driveEmbedUrl,
   fetchProcess,
   signedUrl,
 } from "@/lib/kb";
