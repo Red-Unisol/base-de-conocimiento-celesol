@@ -157,7 +157,20 @@ export async function signedUrl(bucket: string, path: string, expiresIn = 3600) 
   return data.signedUrl;
 }
 
+/** Convierte una URL de Google Drive en su URL de reproducción embebida segura. */
+export function driveEmbedUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const clean = url.trim();
+  if (!/drive\.google\.com|docs\.google\.com/.test(clean)) return clean;
+  const id =
+    clean.match(/\/file\/d\/([a-zA-Z0-9_-]{10,})/)?.[1] ??
+    clean.match(/[?&]id=([a-zA-Z0-9_-]{10,})/)?.[1] ??
+    null;
+  return id ? `https://drive.google.com/file/d/${id}/preview` : clean;
+}
+
 export function slugify(value: string) {
+
   return value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
