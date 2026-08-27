@@ -204,19 +204,6 @@ function ProcessDetail() {
                     {formatDate(process.updated_at)}
                   </span>
                 </div>
-                {process.video_path && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() =>
-                      download(VIDEO_BUCKET, process.video_path!, `${process.slug}.mp4`)
-                    }
-                  >
-                    <Download className="size-4" />
-                    Descargar video
-                  </Button>
-                )}
                 {process.tags.length > 0 && (
                   <>
                     <Separator />
