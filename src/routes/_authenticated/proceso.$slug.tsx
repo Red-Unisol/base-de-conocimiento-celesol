@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, Download, FileText, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 import { AppLayout } from "@/components/app-layout";
+import { PdfViewer } from "@/components/pdf-viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,6 +54,10 @@ function bytes(n: number) {
     i += 1;
   }
   return `${v.toFixed(v < 10 && i > 0 ? 1 : 0)} ${units[i]}`;
+}
+
+function isPdf(path: string) {
+  return path.toLowerCase().endsWith(".pdf");
 }
 
 function ProcessDetail() {
@@ -167,11 +172,15 @@ function ProcessDetail() {
                 </div>
               ) : process.document_path ? (
                 doc.data ? (
-                  <iframe
-                    src={doc.data}
-                    title={`Documento del proceso: ${process.title}`}
-                    className="mt-4 h-[70vh] w-full rounded-xl border border-border bg-card"
-                  />
+                  isPdf(process.document_path) ? (
+                    <PdfViewer url={doc.data} title={process.title} />
+                  ) : (
+                    <iframe
+                      src={doc.data}
+                      title={`Documento del proceso: ${process.title}`}
+                      className="mt-4 h-[70vh] w-full rounded-xl border border-border bg-card"
+                    />
+                  )
                 ) : (
                   <Skeleton className="mt-4 h-[70vh] w-full" />
                 )
