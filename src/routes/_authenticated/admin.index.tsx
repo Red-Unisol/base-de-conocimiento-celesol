@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { IndexPanel } from "@/components/index-panel";
 import { TagPicker } from "@/components/tag-picker";
 import {
   Select,
@@ -33,6 +34,7 @@ import {
   isComplete,
   missingPieces,
 } from "@/lib/kb";
+import { reindexProcessSafely } from "@/lib/rag-client";
 
 const TARGET = 55;
 
@@ -102,6 +104,7 @@ function AdminPage() {
             <TabsTrigger value="individual">Carga individual</TabsTrigger>
             <TabsTrigger value="masiva">Carga masiva</TabsTrigger>
             <TabsTrigger value="panel">Panel de migración</TabsTrigger>
+            <TabsTrigger value="indice">Índice IA</TabsTrigger>
           </TabsList>
 
           <TabsContent value="individual" className="mt-6">
@@ -112,6 +115,9 @@ function AdminPage() {
           </TabsContent>
           <TabsContent value="panel" className="mt-6">
             <MigrationPanel />
+          </TabsContent>
+          <TabsContent value="indice" className="mt-6">
+            <IndexPanel />
           </TabsContent>
         </Tabs>
       </div>
@@ -137,7 +143,8 @@ function SingleUpload() {
 
   const mutation = useMutation({
     mutationFn: createProcess,
-    onSuccess: () => {
+    onSuccess: (row) => {
+      void reindexProcessSafely(row.id, docFile);
       toast.success("Proceso publicado", { description: "Ya está disponible en el catálogo." });
       qc.invalidateQueries({ queryKey: ["processes"] });
       setTitle("");

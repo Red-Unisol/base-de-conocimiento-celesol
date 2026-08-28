@@ -28,6 +28,7 @@ import {
   fetchTags,
   updateProcess,
 } from "@/lib/kb";
+import { reindexProcessSafely } from "@/lib/rag-client";
 
 export const Route = createFileRoute("/_authenticated/admin/proceso/$id")({
   head: () => ({
@@ -135,6 +136,7 @@ function EditForm() {
   const save = useMutation({
     mutationFn: updateProcess,
     onSuccess: (_res, vars) => {
+      void reindexProcessSafely(vars.id, docFile);
       toast.success(vars.status === "published" ? "Proceso publicado" : "Borrador guardado");
       qc.invalidateQueries({ queryKey: ["processes"] });
       qc.invalidateQueries({ queryKey: ["process", id] });
