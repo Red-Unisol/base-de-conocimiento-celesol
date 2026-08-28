@@ -142,7 +142,8 @@ function SingleUpload() {
 
   const mutation = useMutation({
     mutationFn: createProcess,
-    onSuccess: () => {
+    onSuccess: (row) => {
+      void reindexProcessSafely(row.id, docFile);
       toast.success("Proceso publicado", { description: "Ya está disponible en el catálogo." });
       qc.invalidateQueries({ queryKey: ["processes"] });
       setTitle("");
