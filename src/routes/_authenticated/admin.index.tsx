@@ -102,6 +102,7 @@ function AdminPage() {
             <TabsTrigger value="individual">Carga individual</TabsTrigger>
             <TabsTrigger value="masiva">Carga masiva</TabsTrigger>
             <TabsTrigger value="panel">Panel de migración</TabsTrigger>
+            <TabsTrigger value="indice">Índice IA</TabsTrigger>
           </TabsList>
 
           <TabsContent value="individual" className="mt-6">
@@ -112,6 +113,9 @@ function AdminPage() {
           </TabsContent>
           <TabsContent value="panel" className="mt-6">
             <MigrationPanel />
+          </TabsContent>
+          <TabsContent value="indice" className="mt-6">
+            <IndexPanel />
           </TabsContent>
         </Tabs>
       </div>
