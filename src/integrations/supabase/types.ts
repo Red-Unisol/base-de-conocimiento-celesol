@@ -85,6 +85,41 @@ export type Database = {
         }
         Relationships: []
       }
+      process_chunks: {
+        Row: {
+          chunk_index: number
+          content: string
+          created_at: string
+          embedding: string
+          id: string
+          process_id: string
+        }
+        Insert: {
+          chunk_index?: number
+          content: string
+          created_at?: string
+          embedding: string
+          id?: string
+          process_id: string
+        }
+        Update: {
+          chunk_index?: number
+          content?: string
+          created_at?: string
+          embedding?: string
+          id?: string
+          process_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_chunks_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "processes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       process_tags: {
         Row: {
           process_id: string
@@ -123,8 +158,10 @@ export type Database = {
           created_by: string | null
           document_markdown: string | null
           document_path: string | null
+          document_text: string | null
           duration_label: string
           id: string
+          indexed_at: string | null
           poster_path: string | null
           slug: string
           status: string
@@ -141,8 +178,10 @@ export type Database = {
           created_by?: string | null
           document_markdown?: string | null
           document_path?: string | null
+          document_text?: string | null
           duration_label?: string
           id?: string
+          indexed_at?: string | null
           poster_path?: string | null
           slug: string
           status?: string
@@ -159,8 +198,10 @@ export type Database = {
           created_by?: string | null
           document_markdown?: string | null
           document_path?: string | null
+          document_text?: string | null
           duration_label?: string
           id?: string
+          indexed_at?: string | null
           poster_path?: string | null
           slug?: string
           status?: string
@@ -251,7 +292,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      match_process_chunks: {
+        Args: { match_count?: number; query_embedding: string }
+        Returns: {
+          chunk_index: number
+          content: string
+          process_id: string
+          similarity: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer" | "usuario" | "it"
