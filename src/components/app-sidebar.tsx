@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BookOpen, Home, Upload } from "lucide-react";
+import { BookOpen, Home, Upload, Users } from "lucide-react";
 
 import {
   Sidebar,
@@ -14,11 +14,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useIsAdmin } from "@/hooks/use-auth";
 import { categoryIcon, fetchCategories } from "@/lib/kb";
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const categories = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+  const isAdmin = useIsAdmin();
+
 
 
   return (
