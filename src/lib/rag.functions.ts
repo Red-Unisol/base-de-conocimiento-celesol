@@ -86,11 +86,14 @@ export const askKnowledge = createServerFn({ method: "POST" })
     const { supabase } = context;
     const { answerFromContext, embed } = await import("@/lib/rag.server");
 
-    let vector: number[];
+    let vector: number[] = [];
     try {
-      [vector] = await embed([data.query]);
+      vector = (await embed([data.query]))[0] ?? [];
     } catch (e) {
       return { answer: "", sources: [], error: (e as Error).message };
+    }
+    if (vector.length === 0) {
+      return { answer: "", sources: [], error: "No pudimos procesar la consulta. Probá de nuevo." };
     }
 
     const { data: matches, error } = await supabase.rpc("match_process_chunks", {
