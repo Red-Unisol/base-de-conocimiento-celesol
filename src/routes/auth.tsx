@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { BookOpen, Eye, EyeOff, Loader2 } from "lucide-react";
+import { ArrowLeft, BookOpen, Loader2, MailCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSession } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -18,7 +17,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Ingresar — Base de Conocimiento UNISOL" },
       {
         name: "description",
-        content: "Acceso para colaboradores de UNISOL Unión Solidaria.",
+        content: "Acceso para colaboradores de UNISOL Unión Solidaria con código de verificación.",
       },
       { property: "og:title", content: "Ingresar — UNISOL" },
       { property: "og:description", content: "Acceso interno a la base de conocimiento." },
@@ -33,42 +32,49 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const { user, loading } = useSession();
+  const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!loading && user) navigate({ to: "/" });
   }, [loading, user, navigate]);
 
-  async function signIn(e: React.FormEvent) {
-    e.preventDefault();
+  async function sendCode(e?: React.FormEvent) {
+    e?.preventDefault();
+    const clean = email.trim().toLowerCase();
+    if (!clean) return;
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithOtp({
+      email: clean,
+      options: { shouldCreateUser: true, emailRedirectTo: `${window.location.origin}/` },
+    });
     setBusy(false);
     if (error) {
-      toast.error("No pudimos ingresar", { description: error.message });
+      toast.error("No pudimos enviar el código", { description: error.message });
       return;
     }
-    navigate({ to: "/" });
+    setEmail(clean);
+    setStep("code");
+    toast.success("Código enviado", {
+      description: `Revisá la casilla de ${clean}. Llega en menos de un minuto.`,
+    });
   }
 
-  async function signUp(e: React.FormEvent) {
+  async function verify(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.verifyOtp({
       email,
-      password,
-      options: { emailRedirectTo: `${window.location.origin}/` },
+      token: code.trim(),
+      type: "email",
     });
     setBusy(false);
     if (error) {
-      toast.error("No pudimos crear la cuenta", { description: error.message });
+      toast.error("Código incorrecto o vencido", { description: error.message });
       return;
     }
-    toast.success("Cuenta creada", {
-      description: "Tu cuenta queda activa al instante, sin confirmación por correo.",
-    });
     navigate({ to: "/" });
   }
 
@@ -89,118 +95,86 @@ function AuthPage() {
 
         <Card className="shadow-institutional">
           <CardHeader>
-            <CardTitle className="text-lg">Acceso interno</CardTitle>
+            <CardTitle className="text-lg">
+              {step === "email" ? "Acceso interno" : "Ingresá el código"}
+            </CardTitle>
             <CardDescription>
-              Exclusivo para colaboradores de la mutual.
+              {step === "email"
+                ? "Escribí tu correo y te enviamos un código de verificación. Si es tu primera vez, la cuenta se crea automáticamente."
+                : `Enviamos un código de 6 dígitos a ${email}.`}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="ingresar">
-              <TabsList className="w-full">
-                <TabsTrigger value="ingresar" className="flex-1">
+            {step === "email" ? (
+              <form className="space-y-4" onSubmit={sendCode}>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Correo electrónico</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="nombre@unisol.com.ar"
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={busy}>
+                  {busy ? <Loader2 className="size-4 animate-spin" /> : <MailCheck className="size-4" />}
+                  Enviarme el código
+                </Button>
+              </form>
+            ) : (
+              <form className="space-y-4" onSubmit={verify}>
+                <div className="space-y-2">
+                  <Label htmlFor="code">Código de verificación</Label>
+                  <Input
+                    id="code"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    required
+                    maxLength={8}
+                    className="text-center text-lg tracking-[0.4em]"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                    placeholder="000000"
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={busy || code.length < 6}>
+                  {busy && <Loader2 className="size-4 animate-spin" />}
                   Ingresar
-                </TabsTrigger>
-                <TabsTrigger value="crear" className="flex-1">
-                  Crear cuenta
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="ingresar" className="mt-4">
-                <form className="space-y-4" onSubmit={signIn}>
-                  <Fields
-                    email={email}
-                    password={password}
-                    setEmail={setEmail}
-                    setPassword={setPassword}
-                    autoComplete="current-password"
-                  />
-                  <Button type="submit" className="w-full" disabled={busy}>
-                    {busy && <Loader2 className="size-4 animate-spin" />}
-                    Ingresar
-                  </Button>
-                </form>
-              </TabsContent>
-
-              <TabsContent value="crear" className="mt-4">
-                <form className="space-y-4" onSubmit={signUp}>
-                  <Fields
-                    email={email}
-                    password={password}
-                    setEmail={setEmail}
-                    setPassword={setPassword}
-                    autoComplete="new-password"
-                  />
-                  <Button type="submit" className="w-full" disabled={busy}>
-                    {busy && <Loader2 className="size-4 animate-spin" />}
-                    Crear cuenta
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+                </Button>
+                <div className="flex items-center justify-between text-xs">
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+                    onClick={() => {
+                      setStep("email");
+                      setCode("");
+                    }}
+                  >
+                    <ArrowLeft className="size-3" />
+                    Cambiar correo
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    className="font-medium text-brand transition-opacity hover:opacity-80 disabled:opacity-50"
+                    onClick={() => sendCode()}
+                  >
+                    Reenviar código
+                  </button>
+                </div>
+              </form>
+            )}
           </CardContent>
         </Card>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Los permisos de carga los asigna un administrador.
+          Las cuentas nuevas ingresan con el rol «usuario». Los permisos adicionales los asigna un
+          administrador.
         </p>
       </div>
     </div>
-  );
-}
-
-function Fields({
-  email,
-  password,
-  setEmail,
-  setPassword,
-  autoComplete,
-}: {
-  email: string;
-  password: string;
-  setEmail: (v: string) => void;
-  setPassword: (v: string) => void;
-  autoComplete: string;
-}) {
-  const [show, setShow] = useState(false);
-  return (
-
-    <>
-      <div className="space-y-2">
-        <Label htmlFor={`email-${autoComplete}`}>Correo institucional</Label>
-        <Input
-          id={`email-${autoComplete}`}
-          type="email"
-          required
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="nombre@unisol.com.ar"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor={`pass-${autoComplete}`}>Contraseña</Label>
-        <div className="relative">
-          <Input
-            id={`pass-${autoComplete}`}
-            type={show ? "text" : "password"}
-            required
-            minLength={6}
-            className="pr-10"
-            autoComplete={autoComplete}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button
-            type="button"
-            onClick={() => setShow((v) => !v)}
-            aria-label={show ? "Ocultar contraseña" : "Mostrar contraseña"}
-            className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-          </button>
-        </div>
-      </div>
-
-    </>
   );
 }
