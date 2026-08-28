@@ -135,6 +135,7 @@ function EditForm() {
   const save = useMutation({
     mutationFn: updateProcess,
     onSuccess: (_res, vars) => {
+      void reindexProcessSafely(vars.id, docFile);
       toast.success(vars.status === "published" ? "Proceso publicado" : "Borrador guardado");
       qc.invalidateQueries({ queryKey: ["processes"] });
       qc.invalidateQueries({ queryKey: ["process", id] });
