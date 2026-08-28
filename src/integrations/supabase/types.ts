@@ -59,6 +59,7 @@ export type Database = {
           icon: string
           id: string
           name: string
+          required_role: Database["public"]["Enums"]["app_role"] | null
           slug: string
           sort_order: number
         }
@@ -68,6 +69,7 @@ export type Database = {
           icon?: string
           id?: string
           name: string
+          required_role?: Database["public"]["Enums"]["app_role"] | null
           slug: string
           sort_order?: number
         }
@@ -77,6 +79,7 @@ export type Database = {
           icon?: string
           id?: string
           name?: string
+          required_role?: Database["public"]["Enums"]["app_role"] | null
           slug?: string
           sort_order?: number
         }
@@ -176,6 +179,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          last_seen_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id: string
+          last_seen_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          last_seen_at?: string | null
+        }
+        Relationships: []
       }
       tags: {
         Row: {
