@@ -28,6 +28,7 @@ import {
   fetchTags,
   updateProcess,
 } from "@/lib/kb";
+import { reindexProcessSafely } from "@/lib/rag-client";
 
 export const Route = createFileRoute("/_authenticated/admin/proceso/$id")({
   head: () => ({
