@@ -401,24 +401,5 @@ export function searchProcesses(query: string, list: Process[]): Process[] {
     .map((r) => r.p);
 }
 
-/** Respuesta IA provisoria sobre el contenido real. La etapa 3 la reemplaza por RAG semántico. */
-export function buildAiAnswer(query: string, results: Process[]) {
-  if (results.length === 0) {
-    return "No encontré documentación relacionada con esa consulta en la base de conocimiento. Probá con otros términos o revisá las categorías del menú lateral.";
-  }
-  const top = results[0]!;
-  const extract = (top.document_markdown ?? top.summary ?? "")
-    .replace(/[#*`>]/g, "")
-    .split("\n")
-    .filter((l) => l.trim())
-    .slice(0, 6)
-    .join(" ")
-    .slice(0, 600);
-  return `Según la documentación interna, **${top.title}** (${
-    top.category?.name ?? "sin categoría"
-  }) responde a tu consulta sobre "${query}".\n\n${extract}${
-    results.length > 1
-      ? `\n\nHay ${results.length - 1} documento(s) adicional(es) relacionado(s) que conviene revisar.`
-      : ""
-  }`;
-}
+// La respuesta IA se genera en el servidor con RAG semántico (src/lib/rag.functions.ts).
+// `searchProcesses` queda como coincidencia literal para la pestaña "Resultados directos".
