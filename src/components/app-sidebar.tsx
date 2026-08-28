@@ -83,22 +83,37 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === "/admin"}
-              tooltip="Cargar material"
-            >
-              <Link to="/admin">
-                <Upload />
-                <span>Cargar material</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
+      {isAdmin.data && (
+        <SidebarFooter className="border-t border-sidebar-border">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === "/admin"}
+                tooltip="Cargar material"
+              >
+                <Link to="/admin">
+                  <Upload />
+                  <span>Cargar material</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === "/admin/usuarios"}
+                tooltip="Usuarios"
+              >
+                <Link to="/admin/usuarios">
+                  <Users />
+                  <span>Usuarios</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      )}
+
     </Sidebar>
   );
 }
