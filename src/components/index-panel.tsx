@@ -159,7 +159,7 @@ export function IndexPanel() {
               <span className="flex items-center gap-2 text-xs text-muted-foreground">
                 {r.indexed_at ? (
                   <>
-                    <CheckCircle2 className="size-3.5 text-brand-accent" />
+                    <CheckCircle2 className="size-3.5 text-brand" />
                     Indexado el {formatDate(r.indexed_at)}
                   </>
                 ) : (
