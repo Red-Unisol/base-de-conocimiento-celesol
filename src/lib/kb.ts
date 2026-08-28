@@ -6,6 +6,7 @@ import {
   Inbox,
   LineChart,
   Megaphone,
+  Monitor,
   PiggyBank,
   type LucideIcon,
 } from "lucide-react";
@@ -24,6 +25,7 @@ const ICONS: Record<string, LucideIcon> = {
   LineChart,
   Briefcase,
   Megaphone,
+  Monitor,
   Folder,
 };
 
