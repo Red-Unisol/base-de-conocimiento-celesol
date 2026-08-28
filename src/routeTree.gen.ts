@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 import { Route as AuthenticatedCategoriaSlugRouteImport } from './routes/_authenticated/categoria.$slug'
 import { Route as AuthenticatedProcesoSlugRouteImport } from './routes/_authenticated/proceso.$slug'
 import { Route as AuthenticatedAdminProcesoIdRouteImport } from './routes/_authenticated/admin.proceso.$id'
@@ -36,6 +37,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminUsuariosRoute =
+  AuthenticatedAdminUsuariosRouteImport.update({
+    id: '/admin/usuarios',
+    path: '/admin/usuarios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCategoriaSlugRoute =
   AuthenticatedCategoriaSlugRouteImport.update({
     id: '/categoria/$slug',
@@ -58,6 +65,7 @@ const AuthenticatedAdminProcesoIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/': typeof AuthenticatedIndexRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -76,6 +85,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/_authenticated/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/admin/usuarios'
     | '/categoria/$slug'
     | '/proceso/$slug'
     | '/admin/'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/'
+    | '/admin/usuarios'
     | '/categoria/$slug'
     | '/proceso/$slug'
     | '/admin'
@@ -103,6 +115,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/'
+    | '/_authenticated/admin/usuarios'
     | '/_authenticated/categoria/$slug'
     | '/_authenticated/proceso/$slug'
     | '/_authenticated/admin/'
@@ -144,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/usuarios': {
+      id: '/_authenticated/admin/usuarios'
+      path: '/admin/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/categoria/$slug': {
       id: '/_authenticated/categoria/$slug'
       path: '/categoria/$slug'
@@ -170,6 +190,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedCategoriaSlugRoute: typeof AuthenticatedCategoriaSlugRoute
   AuthenticatedProcesoSlugRoute: typeof AuthenticatedProcesoSlugRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -178,6 +199,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedCategoriaSlugRoute: AuthenticatedCategoriaSlugRoute,
   AuthenticatedProcesoSlugRoute: AuthenticatedProcesoSlugRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,

@@ -59,6 +59,7 @@ export type Database = {
           icon: string
           id: string
           name: string
+          required_role: Database["public"]["Enums"]["app_role"] | null
           slug: string
           sort_order: number
         }
@@ -68,6 +69,7 @@ export type Database = {
           icon?: string
           id?: string
           name: string
+          required_role?: Database["public"]["Enums"]["app_role"] | null
           slug: string
           sort_order?: number
         }
@@ -77,6 +79,7 @@ export type Database = {
           icon?: string
           id?: string
           name?: string
+          required_role?: Database["public"]["Enums"]["app_role"] | null
           slug?: string
           sort_order?: number
         }
@@ -177,6 +180,30 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          last_seen_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id: string
+          last_seen_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          last_seen_at?: string | null
+        }
+        Relationships: []
+      }
       tags: {
         Row: {
           created_at: string
@@ -227,7 +254,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      app_role: "admin" | "editor" | "viewer"
+      app_role: "admin" | "editor" | "viewer" | "usuario" | "it"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -355,7 +382,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "editor", "viewer"],
+      app_role: ["admin", "editor", "viewer", "usuario", "it"],
     },
   },
 } as const

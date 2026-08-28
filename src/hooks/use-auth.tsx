@@ -3,6 +3,9 @@ import type { Session } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+export type AppRole = Database["public"]["Enums"]["app_role"];
 
 export function useSession() {
   const [session, setSession] = useState<Session | null>(null);
@@ -23,20 +26,23 @@ export function useSession() {
   return { session, user: session?.user ?? null, loading };
 }
 
-export function useIsAdmin() {
+export function useRoles() {
   const { user } = useSession();
   return useQuery({
-    queryKey: ["is-admin", user?.id],
+    queryKey: ["my-roles", user?.id],
     enabled: Boolean(user?.id),
-    queryFn: async () => {
+    queryFn: async (): Promise<AppRole[]> => {
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", user!.id)
-        .eq("role", "admin")
-        .maybeSingle();
+        .eq("user_id", user!.id);
       if (error) throw error;
-      return Boolean(data);
+      return (data ?? []).map((r) => r.role);
     },
   });
+}
+
+export function useIsAdmin() {
+  const roles = useRoles();
+  return { ...roles, data: roles.data ? roles.data.includes("admin") : undefined };
 }
