@@ -34,6 +34,7 @@ import {
   isComplete,
   missingPieces,
 } from "@/lib/kb";
+import { reindexProcessSafely } from "@/lib/rag-client";
 
 const TARGET = 55;
 
