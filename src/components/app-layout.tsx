@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -8,15 +9,24 @@ import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useSession } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { touchLastSeen } from "@/lib/users";
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useSession();
 
+  useEffect(() => {
+    if (user?.id) void touchLastSeen(user.id);
+  }, [user?.id]);
+
   async function signOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth" });
+    navigate({ to: "/auth", replace: true });
   }
+
 
   return (
     <SidebarProvider>
