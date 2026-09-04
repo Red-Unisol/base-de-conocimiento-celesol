@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, BookOpen, Loader2, MailCheck } from "lucide-react";
+import { BookOpen, Eye, EyeOff, Loader2, LogIn, MailCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Ingresar — Base de Conocimiento UNISOL" },
       {
         name: "description",
-        content: "Acceso para colaboradores de UNISOL Unión Solidaria con código de verificación.",
+        content: "Acceso para colaboradores de UNISOL Unión Solidaria con correo y contraseña.",
       },
       { property: "og:title", content: "Ingresar — UNISOL" },
       { property: "og:description", content: "Acceso interno a la base de conocimiento." },
@@ -32,50 +32,56 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const { user, loading } = useSession();
-  const [step, setStep] = useState<"email" | "code">("email");
+  const [mode, setMode] = useState<"password" | "link">("password");
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!loading && user) navigate({ to: "/" });
   }, [loading, user, navigate]);
 
-  async function sendCode(e?: React.FormEvent) {
+  async function signIn(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
+    setBusy(false);
+    if (error) {
+      toast.error("No pudimos ingresar", {
+        description: "Revisá el correo y la contraseña. Si es tu primera vez, pedí el enlace de acceso.",
+      });
+      return;
+    }
+    navigate({ to: "/" });
+  }
+
+  async function sendLink(e?: React.FormEvent) {
     e?.preventDefault();
     const clean = email.trim().toLowerCase();
     if (!clean) return;
     setBusy(true);
     const { error } = await supabase.auth.signInWithOtp({
       email: clean,
-      options: { shouldCreateUser: true, emailRedirectTo: `${window.location.origin}/` },
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: `${window.location.origin}/definir-clave`,
+      },
     });
     setBusy(false);
     if (error) {
-      toast.error("No pudimos enviar el código", { description: error.message });
+      toast.error("No pudimos enviar el enlace", { description: error.message });
       return;
     }
     setEmail(clean);
-    setStep("code");
-    toast.success("Código enviado", {
-      description: `Revisá la casilla de ${clean}. Llega en menos de un minuto.`,
+    setSent(true);
+    toast.success("Enlace enviado", {
+      description: `Revisá la casilla de ${clean} y abrí el enlace para elegir tu contraseña.`,
     });
-  }
-
-  async function verify(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token: code.trim(),
-      type: "email",
-    });
-    setBusy(false);
-    if (error) {
-      toast.error("Código incorrecto o vencido", { description: error.message });
-      return;
-    }
-    navigate({ to: "/" });
   }
 
   return (
@@ -96,17 +102,17 @@ function AuthPage() {
         <Card className="shadow-institutional">
           <CardHeader>
             <CardTitle className="text-lg">
-              {step === "email" ? "Acceso interno" : "Ingresá el código"}
+              {mode === "password" ? "Acceso interno" : "Primer ingreso"}
             </CardTitle>
             <CardDescription>
-              {step === "email"
-                ? "Escribí tu correo y te enviamos un código de verificación. Si es tu primera vez, la cuenta se crea automáticamente."
-                : `Enviamos un código de 6 dígitos a ${email}.`}
+              {mode === "password"
+                ? "Ingresá con tu correo y contraseña."
+                : "Te enviamos un enlace de acceso por correo. Al abrirlo vas a poder elegir tu contraseña."}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {step === "email" ? (
-              <form className="space-y-4" onSubmit={sendCode}>
+            {mode === "password" ? (
+              <form className="space-y-4" onSubmit={signIn}>
                 <div className="space-y-2">
                   <Label htmlFor="email">Correo electrónico</Label>
                   <Input
@@ -119,52 +125,74 @@ function AuthPage() {
                     placeholder="nombre@unisol.com.ar"
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={busy}>
-                  {busy ? <Loader2 className="size-4 animate-spin" /> : <MailCheck className="size-4" />}
-                  Enviarme el código
-                </Button>
-              </form>
-            ) : (
-              <form className="space-y-4" onSubmit={verify}>
                 <div className="space-y-2">
-                  <Label htmlFor="code">Código de verificación</Label>
-                  <Input
-                    id="code"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    required
-                    maxLength={8}
-                    className="text-center text-lg tracking-[0.4em]"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    placeholder="000000"
-                  />
+                  <Label htmlFor="password">Contraseña</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
                 </div>
-                <Button type="submit" className="w-full" disabled={busy || code.length < 6}>
-                  {busy && <Loader2 className="size-4 animate-spin" />}
+                <Button type="submit" className="w-full" disabled={busy}>
+                  {busy ? <Loader2 className="size-4 animate-spin" /> : <LogIn className="size-4" />}
                   Ingresar
                 </Button>
-                <div className="flex items-center justify-between text-xs">
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
-                    onClick={() => {
-                      setStep("email");
-                      setCode("");
-                    }}
-                  >
-                    <ArrowLeft className="size-3" />
-                    Cambiar correo
-                  </button>
-                  <button
-                    type="button"
-                    disabled={busy}
-                    className="font-medium text-brand transition-opacity hover:opacity-80 disabled:opacity-50"
-                    onClick={() => sendCode()}
-                  >
-                    Reenviar código
-                  </button>
+                <button
+                  type="button"
+                  className="w-full text-center text-xs font-medium text-brand transition-opacity hover:opacity-80"
+                  onClick={() => {
+                    setMode("link");
+                    setSent(false);
+                  }}
+                >
+                  ¿Primera vez o no recordás la contraseña? Pedí un enlace de acceso
+                </button>
+              </form>
+            ) : (
+              <form className="space-y-4" onSubmit={sendLink}>
+                <div className="space-y-2">
+                  <Label htmlFor="link-email">Correo electrónico</Label>
+                  <Input
+                    id="link-email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="nombre@unisol.com.ar"
+                  />
                 </div>
+                {sent && (
+                  <p className="rounded-md bg-muted p-3 text-xs text-muted-foreground">
+                    Enviamos el enlace a {email}. Abrilo desde este dispositivo para definir tu
+                    contraseña.
+                  </p>
+                )}
+                <Button type="submit" className="w-full" disabled={busy}>
+                  {busy ? <Loader2 className="size-4 animate-spin" /> : <MailCheck className="size-4" />}
+                  {sent ? "Reenviar enlace" : "Enviarme el enlace"}
+                </Button>
+                <button
+                  type="button"
+                  className="w-full text-center text-xs font-medium text-brand transition-opacity hover:opacity-80"
+                  onClick={() => setMode("password")}
+                >
+                  Volver al ingreso con contraseña
+                </button>
               </form>
             )}
           </CardContent>
@@ -178,3 +206,4 @@ function AuthPage() {
     </div>
   );
 }
+
