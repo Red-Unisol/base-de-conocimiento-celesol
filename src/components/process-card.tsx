@@ -58,7 +58,7 @@ export function ProcessCard({ process }: { process: Process }) {
           </span>
           <PlayCircle className="absolute bottom-2 left-3 size-6 text-primary-foreground/70 transition-colors group-hover:text-primary-foreground" />
           {process.duration_label && (
-            <span className="absolute bottom-2 right-2 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+            <span className="absolute bottom-2 right-2 rounded bg-primary/60 px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground backdrop-blur-sm">
               {process.duration_label}
             </span>
           )}
