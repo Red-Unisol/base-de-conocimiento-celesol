@@ -13,6 +13,7 @@ export type RegisteredUser = {
 export const MANAGED_ROLES: { value: AppRole; label: string; hint: string }[] = [
   { value: "usuario", label: "Usuario", hint: "Lectura del material general" },
   { value: "it", label: "IT", hint: "Acceso a la categoría Sistemas" },
+  { value: "riesgo", label: "Riesgo", hint: "Acceso a la categoría Riesgo" },
   { value: "admin", label: "Administrador", hint: "Carga de material y gestión de usuarios" },
 ];
 
