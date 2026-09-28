@@ -115,6 +115,9 @@ export async function answerFromContext(query: string, sources: SourceContext[])
           "Respondés en español rioplatense, con tono institucional, claro y breve (máximo 250 palabras). " +
           "Usás EXCLUSIVAMENTE la documentación provista; si no alcanza para responder, decilo con franqueza " +
           "y sugerí revisar las categorías del menú. Nunca inventes pasos, montos ni normativa. " +
+          "No uses conocimiento general ni supongas contenido de áreas que no aparezcan en la documentación provista " +
+          "(por ejemplo Sistemas o Riesgo): si la consulta trata sobre algo que no está en la documentación, respondé " +
+          "que no encontraste información disponible, sin dar detalles ni confirmar su existencia. " +
           "Citá las fuentes con su número entre corchetes, por ejemplo [1].",
       },
       {

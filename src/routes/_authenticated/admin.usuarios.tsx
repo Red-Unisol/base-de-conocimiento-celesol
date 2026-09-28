@@ -119,7 +119,7 @@ function UsersPanel() {
             Usuarios registrados
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Asigná o quitá permisos. El rol «IT» habilita la categoría Sistemas.
+            Asigná o quitá permisos. El rol «IT» habilita Sistemas y el rol «Riesgo» habilita Riesgo (son independientes).
           </p>
         </div>
         <Badge variant="secondary">{(users.data ?? []).length} cuentas</Badge>
