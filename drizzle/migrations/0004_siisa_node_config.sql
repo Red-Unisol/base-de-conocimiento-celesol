@@ -1,0 +1,2 @@
+ALTER TABLE public.policy_siisa_nodes ADD COLUMN IF NOT EXISTS config_siisa jsonb NOT NULL DEFAULT '{}'::jsonb;
+COMMENT ON COLUMN public.policy_siisa_nodes.config_siisa IS 'Configuración estructurada de diseño por tipo de nodo SIISA (entradas, salidas, parámetros del tipo). Sólo diseño, no ejecución.';
