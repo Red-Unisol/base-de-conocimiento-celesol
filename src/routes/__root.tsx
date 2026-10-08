@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { ThemeProvider } from "next-themes";
 import { useEffect, type ReactNode } from "react";
