@@ -16,7 +16,7 @@ const NONE = "__none__";
 
 function Sel({ value, onChange, options, placeholder, disabled }: { value: string | null | undefined; onChange: (v: string | null) => void; options: { value: string; label: string }[]; placeholder?: string; disabled?: boolean }) {
   return (
-    <Select value={value || NONE} onValueChange={(v) => onChange(v === NONE ? null : v)} disabled={disabled}>
+    <Select value={value || NONE} onValueChange={(v) => onChange(v === NONE ? null : v)} disabled={Boolean(disabled)}>
       <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={placeholder} /></SelectTrigger>
       <SelectContent>
         <SelectItem value={NONE}>— Sin definir —</SelectItem>
