@@ -4,6 +4,7 @@ import { ArrowRight, Scale, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AppLayout } from "@/components/app-layout";
+import { GeneralFlow } from "@/components/policies/general-flow";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -55,6 +56,7 @@ function PoliciesPage() {
 
       <section className="px-6 py-8">
         <div className="mx-auto max-w-6xl space-y-6">
+          {q.data && <GeneralFlow policies={q.data} />}
           <div className="flex flex-wrap gap-3">
             <div className="relative min-w-60 flex-1">
               <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
