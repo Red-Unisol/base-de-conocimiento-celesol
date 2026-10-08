@@ -30,17 +30,27 @@ const NODES: FlowNode[] = [
     title: "Ingreso de datos",
     desc: "Datos clave cargados al iniciar la solicitud.",
     receives: [],
-    generates: ["Nro de documento", "Nombre"],
+    generates: ["Nro de documento", "Nombre", "Recibo de sueldo (archivo)"],
   },
   {
     id: "ocr",
     type: "Parser",
     icon: FileScan,
-    title: "Lectura del recibo (OCR)",
+    title: "Lector de recibo",
     desc: "Extrae la información del recibo de sueldo o haber.",
-    receives: ["Nro de documento", "Imagen o PDF del recibo"],
-    generates: ["Empleador / organismo", "Situación de revista", "Haber bruto", "Descuentos de ley", "Descuentos voluntarios", "Haber neto", "Período del recibo"],
+    receives: ["Recibo de sueldo (archivo)"],
+    generates: ["Documento del recibo", "Nombre del recibo", "Empleador / organismo", "Situación de revista", "Haber bruto", "Descuentos de ley", "Descuentos voluntarios", "Haber neto", "Período del recibo"],
     note: "Campos propuestos a partir de las reglas relevadas; falta confirmar la lista definitiva.",
+  },
+  {
+    id: "coincidencia",
+    type: "Decisión",
+    icon: GitFork,
+    title: "¿Coincide persona y recibo?",
+    desc: "Compara el documento y el nombre ingresados con los que figuran en el recibo.",
+    receives: ["Nro de documento", "Nombre", "Documento del recibo", "Nombre del recibo"],
+    generates: ["Sí → sigue a la derivación", "No → Rechazado"],
+    note: "Falta definir el criterio de coincidencia del nombre (exacta o aproximada).",
   },
   {
     id: "derivacion",
@@ -95,8 +105,29 @@ export function GeneralFlow({ policies }: { policies: PolicySummary[] }) {
       <div className="flex flex-col items-center">
         {NODES.map((n, i) => (
           <div key={n.id} className="flex w-full flex-col items-center">
-            {i > 0 && <ArrowDown className="my-1.5 size-4 text-brand" />}
-            <NodeBox n={n} onOpen={() => setOpen(n)} pending={n.id === "derivacion"} />
+            {i > 0 && (
+              <div className="flex flex-col items-center">
+                {NODES[i - 1]?.id === "coincidencia" && <span className="text-[10px] font-semibold text-brand">Sí</span>}
+                <ArrowDown className="my-1 size-4 text-brand" />
+              </div>
+            )}
+            {n.id === "coincidencia" ? (
+              <div className="relative flex items-center">
+                <NodeBox n={n} onOpen={() => setOpen(n)} />
+                <div className="absolute left-full flex items-center">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] font-semibold text-destructive">No</span>
+                    <div className="w-10 border-t-2 border-destructive" />
+                  </div>
+                  <div className="rounded-lg border-2 border-destructive bg-destructive/10 px-3 py-2 text-center">
+                    <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">Fin</div>
+                    <div className="text-sm font-semibold text-destructive">Rechazado</div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <NodeBox n={n} onOpen={() => setOpen(n)} pending={n.id === "derivacion"} />
+            )}
           </div>
         ))}
 
