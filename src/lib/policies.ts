@@ -9,6 +9,30 @@ export const POLICY_STATUSES = [
   { value: "en_validacion", label: "En validación" },
   { value: "validada", label: "Validada" },
   { value: "en_diseno_siisa", label: "En diseño SIISA" },
+  { value: "sin_logica", label: "Sin lógica documentada" },
+];
+
+/** Estados de diseño de líneas y trazas. "Implementada confirmada" sólo tras comprobarlo en SIISA. */
+export const DESIGN_STATUSES = [
+  { value: "relevada", label: "Relevada" },
+  { value: "pendiente_validacion", label: "Pendiente de validación" },
+  { value: "disenada", label: "Diseñada" },
+  { value: "lista_siisa", label: "Lista para SIISA" },
+  { value: "implementada_confirmada", label: "Implementada confirmada" },
+];
+
+export const SEGMENTS = [
+  { value: "nuevo", label: "Nuevo" },
+  { value: "afiliado primer crédito", label: "Afiliado primer crédito" },
+  { value: "recurrente", label: "Recurrente" },
+  { value: "activo", label: "Activo" },
+  { value: "pasivo", label: "Pasivo" },
+];
+
+export const EDGE_KINDS = [
+  { value: "verdadero", label: "Verdadero" },
+  { value: "falso", label: "Falso" },
+  { value: "secundaria", label: "Secundaria" },
 ];
 
 export const DOC_TYPES = [
@@ -33,8 +57,8 @@ export const QUESTION_STATUSES = [
 ];
 
 export const NODE_TYPES = [
-  "Inicio", "Test Binario", "Decisión", "Matriz", "Llamador", "Cálculo",
-  "Comentario", "Concurrente", "REST/Parser", "otro",
+  "Inicio", "Fuente REST", "Parser", "Cálculo", "Binario", "Matriz", "Llamador",
+  "Decisión", "Comentario", "Concurrente", "otro",
 ].map((v) => ({ value: v, label: v }));
 
 export const IMPL_STATUSES = [
@@ -78,13 +102,15 @@ export type PolicySummary = {
   documents: number;
   nodes: number;
   calls: string[]; // ids de políticas llamadas desde nodos SIISA
+  lines: string[];
+  sources: string[]; // ids de integraciones usadas por nodos
 };
 
 export async function fetchPolicySummaries(): Promise<PolicySummary[]> {
   const { data, error } = await supabase
     .from("policies")
     .select(
-      "id, slug, code, name, description, status, working_version, parent_policy_id, updated_at, policy_rules(id), policy_documents(id), policy_questions(id, status), policy_siisa_nodes!policy_siisa_nodes_policy_id_fkey(id, called_policy_id)",
+      "id, slug, code, name, description, status, working_version, parent_policy_id, updated_at, policy_rules(id), policy_documents(id), policy_questions(id, status), policy_siisa_nodes!policy_siisa_nodes_policy_id_fkey(id, called_policy_id, integration_id), policy_lines(id, name)",
     )
     .order("sort_order")
     .order("name");
@@ -104,6 +130,8 @@ export async function fetchPolicySummaries(): Promise<PolicySummary[]> {
     openQuestions: (p.policy_questions ?? []).filter((q: any) => q.status !== "resuelta").length,
     nodes: p.policy_siisa_nodes?.length ?? 0,
     calls: (p.policy_siisa_nodes ?? []).map((n: any) => n.called_policy_id).filter(Boolean),
+    lines: (p.policy_lines ?? []).map((l: any) => l.name),
+    sources: [...new Set<string>((p.policy_siisa_nodes ?? []).map((n: any) => n.integration_id).filter(Boolean))],
   }));
 }
 
@@ -117,6 +145,11 @@ export type PolicyBundle = {
   edges: any[];
   log: any[];
   integrations: any[];
+  lines: any[];
+  traces: any[];
+  variables: any[];
+  variableLinks: any[];
+  walkthroughs: any[];
   allPolicies: { id: string; name: string; slug: string }[];
 };
 
@@ -129,7 +162,7 @@ export async function fetchPolicyBundle(slug: string): Promise<PolicyBundle | nu
   if (error) throw error;
   if (!policy) return null;
   const id = policy.id;
-  const [docs, rules, qs, nodes, edges, log, integ, all] = await Promise.all([
+  const [docs, rules, qs, nodes, edges, log, integ, all, lines, traces, vars] = await Promise.all([
     supabase.from("policy_documents").select("*").eq("policy_id", id).order("created_at"),
     supabase.from("policy_rules").select("*").eq("policy_id", id).order("sort_order").order("created_at"),
     supabase.from("policy_questions").select("*").eq("policy_id", id).order("created_at"),
@@ -138,8 +171,27 @@ export async function fetchPolicyBundle(slug: string): Promise<PolicyBundle | nu
     supabase.from("policy_change_log").select("*").eq("policy_id", id).order("created_at", { ascending: false }),
     supabase.from("policy_integrations").select("*").order("name"),
     supabase.from("policies").select("id, name, slug").order("name"),
+    supabase.from("policy_lines").select("*").eq("policy_id", id).order("sort_order"),
+    supabase.from("policy_traces").select("*").eq("policy_id", id).order("created_at"),
+    supabase.from("policy_variables").select("*").order("name"),
   ]);
-  for (const r of [docs, rules, qs, nodes, edges, log, integ, all]) if (r.error) throw r.error;
+  for (const r of [docs, rules, qs, nodes, edges, log, integ, all, lines, traces, vars]) if (r.error) throw r.error;
+  const traceIds = (traces.data ?? []).map((t) => t.id);
+  let variableLinks: any[] = [];
+  let walkthroughs: any[] = [];
+  if (traceIds.length) {
+    const nodeIds = (nodes.data ?? []).map((n) => n.id);
+    const [vl, wk] = await Promise.all([
+      nodeIds.length
+        ? supabase.from("policy_variable_links").select("*").in("node_id", nodeIds)
+        : Promise.resolve({ data: [], error: null }),
+      supabase.from("policy_walkthroughs").select("*").in("trace_id", traceIds).order("created_at", { ascending: false }),
+    ]);
+    if (vl.error) throw vl.error;
+    if (wk.error) throw wk.error;
+    variableLinks = vl.data ?? [];
+    walkthroughs = wk.data ?? [];
+  }
   const qIds = (qs.data ?? []).map((q) => q.id);
   let questionRules: { question_id: string; rule_id: string }[] = [];
   if (qIds.length) {
@@ -157,6 +209,11 @@ export async function fetchPolicyBundle(slug: string): Promise<PolicyBundle | nu
     edges: edges.data ?? [],
     log: log.data ?? [],
     integrations: integ.data ?? [],
+    lines: lines.data ?? [],
+    traces: traces.data ?? [],
+    variables: vars.data ?? [],
+    variableLinks,
+    walkthroughs,
     allPolicies: all.data ?? [],
   };
 }
@@ -177,7 +234,12 @@ type Table =
   | "policy_questions"
   | "policy_siisa_nodes"
   | "policy_siisa_edges"
-  | "policy_integrations";
+  | "policy_integrations"
+  | "policy_lines"
+  | "policy_traces"
+  | "policy_variables"
+  | "policy_variable_links"
+  | "policy_walkthroughs";
 
 export async function saveRow(table: Table, values: Record<string, any>, id?: string) {
   const q = id
@@ -233,4 +295,50 @@ export async function signedPolicyFileUrl(path: string) {
   const { data, error } = await supabase.storage.from(POLICY_BUCKET).createSignedUrl(path, 600);
   if (error) throw error;
   return data.signedUrl;
+}
+
+/** Exportación legible para implementadores SIISA (no es un formato de importación). */
+export function exportTraceMarkdown(b: PolicyBundle, traceId: string) {
+  const t = b.traces.find((x) => x.id === traceId);
+  const line = b.lines.find((l) => l.id === t?.line_id);
+  const nodes = b.nodes.filter((n) => n.trace_id === traceId).sort((a, c) => a.sort_order - c.sort_order);
+  const edges = b.edges.filter((e) => e.trace_id === traceId);
+  const name = (id: string) => nodes.find((n) => n.id === id)?.label || "(sin nombre)";
+  const rule = (id: string | null) => b.rules.find((r) => r.id === id);
+  const varsOf = (nid: string) =>
+    b.variableLinks.filter((v) => v.node_id === nid).map((v) => {
+      const vr = b.variables.find((x) => x.id === v.variable_id);
+      return `${vr?.code || vr?.name} (${v.role})`;
+    });
+  const lineRules = b.rules.filter((r) => !line || r.line_id === line.id || !r.line_id);
+  const out: string[] = [];
+  out.push(`# ${b.policy.name} — ${line?.name ?? "General"} — ${t?.name ?? ""} ${t?.version_label ?? ""}`);
+  out.push("", "> Documento de PREPARACIÓN para SIISA. No es una traza ejecutada ni importable automáticamente.");
+  out.push(`> Estado de diseño: ${labelOf(DESIGN_STATUSES, t?.design_status)}. Fuente: ${b.policy.source_url ?? "—"}`, "");
+  out.push("## Nodos (orden propuesto)");
+  nodes.forEach((n, i) => {
+    const r = rule(n.rule_id);
+    out.push("", `### ${i + 1}. ${n.label || "(sin nombre)"} — ${n.node_type}`);
+    out.push(`- Estado: ${labelOf(IMPL_STATUSES, n.impl_status)}`);
+    if (r) out.push(`- Regla: ${r.code} — ${r.original_text} [${labelOf(RULE_STATUSES, r.definition_status)}]`);
+    if (r?.conditions || r?.operator || r?.threshold) out.push(`- Condición: ${r.variable} ${r.operator} ${r.threshold} ${r.conditions}`.trim());
+    const v = varsOf(n.id);
+    if (v.length) out.push(`- Variables: ${v.join(", ")}`);
+    if (n.inputs) out.push(`- Entradas: ${n.inputs}`);
+    if (n.outputs) out.push(`- Salidas: ${n.outputs}`);
+    if (n.data_origin || n.integration_id) out.push(`- Fuente: ${b.integrations.find((x) => x.id === n.integration_id)?.name ?? n.data_origin}`);
+    if (n.source_excerpt) out.push(`- Extracto original: «${n.source_excerpt}»`);
+    if (n.siisa_transformation) out.push(`- Transformación SIISA: ${n.siisa_transformation}`);
+    const outs = edges.filter((e) => e.from_node_id === n.id);
+    if (outs.length) out.push(`- Salidas: ${outs.map((e) => `${e.kind}${e.label ? ` (${e.label})` : ""} → ${name(e.to_node_id)}`).join("; ")}`);
+  });
+  const usedIntegrations = new Set(nodes.map((n) => n.integration_id).filter(Boolean));
+  out.push("", "## Contratos de fuente (catálogo)");
+  b.integrations.filter((i) => usedIntegrations.has(i.id)).forEach((i) => out.push(`- ${i.name} (${i.kind}): ${i.description}`));
+  if (!usedIntegrations.size) out.push("- Sin fuentes asignadas a nodos.");
+  out.push("", "## Reglas de la línea");
+  lineRules.forEach((r) => out.push(`- ${r.code}: ${r.original_text} [${labelOf(RULE_STATUSES, r.definition_status)}]`));
+  out.push("", "## Preguntas pendientes");
+  b.questions.filter((q) => q.status !== "resuelta").forEach((q) => out.push(`- ${q.code}: ${q.question}`));
+  return out.join("\n");
 }

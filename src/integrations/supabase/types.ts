@@ -262,6 +262,56 @@ export type Database = {
         }
         Relationships: []
       }
+      policy_lines: {
+        Row: {
+          code: string
+          created_at: string
+          description: string
+          design_status: string
+          id: string
+          name: string
+          policy_id: string
+          segment: string
+          sort_order: number
+          source_excerpt: string
+          updated_at: string
+        }
+        Insert: {
+          code?: string
+          created_at?: string
+          description?: string
+          design_status?: string
+          id?: string
+          name: string
+          policy_id: string
+          segment?: string
+          sort_order?: number
+          source_excerpt?: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string
+          design_status?: string
+          id?: string
+          name?: string
+          policy_id?: string
+          segment?: string
+          sort_order?: number
+          source_excerpt?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_lines_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       policy_question_rules: {
         Row: {
           question_id: string
@@ -299,6 +349,7 @@ export type Database = {
           code: string
           created_at: string
           id: string
+          line_id: string | null
           policy_id: string
           question: string
           status: string
@@ -313,6 +364,7 @@ export type Database = {
           code?: string
           created_at?: string
           id?: string
+          line_id?: string | null
           policy_id: string
           question: string
           status?: string
@@ -327,6 +379,7 @@ export type Database = {
           code?: string
           created_at?: string
           id?: string
+          line_id?: string | null
           policy_id?: string
           question?: string
           status?: string
@@ -336,6 +389,13 @@ export type Database = {
           validity_scope?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "policy_questions_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "policy_lines"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "policy_questions_policy_id_fkey"
             columns: ["policy_id"]
@@ -351,18 +411,25 @@ export type Database = {
           allows_exception: boolean
           block: string
           code: string
+          conditions: string
           created_at: string
           data_source: string
           definition_status: Database["public"]["Enums"]["policy_rule_status"]
+          effect: string
+          exceptions: string
           id: string
           integration_id: string | null
+          line_id: string | null
           manual_intervention: boolean
           modifies_limit: boolean
           modifies_term: boolean
           operator: string
           original_text: string
           policy_id: string
+          precedence: number | null
+          segment: string
           sort_order: number
+          source_excerpt: string
           threshold: string
           updated_at: string
           variable: string
@@ -372,18 +439,25 @@ export type Database = {
           allows_exception?: boolean
           block?: string
           code?: string
+          conditions?: string
           created_at?: string
           data_source?: string
           definition_status?: Database["public"]["Enums"]["policy_rule_status"]
+          effect?: string
+          exceptions?: string
           id?: string
           integration_id?: string | null
+          line_id?: string | null
           manual_intervention?: boolean
           modifies_limit?: boolean
           modifies_term?: boolean
           operator?: string
           original_text?: string
           policy_id: string
+          precedence?: number | null
+          segment?: string
           sort_order?: number
+          source_excerpt?: string
           threshold?: string
           updated_at?: string
           variable?: string
@@ -393,18 +467,25 @@ export type Database = {
           allows_exception?: boolean
           block?: string
           code?: string
+          conditions?: string
           created_at?: string
           data_source?: string
           definition_status?: Database["public"]["Enums"]["policy_rule_status"]
+          effect?: string
+          exceptions?: string
           id?: string
           integration_id?: string | null
+          line_id?: string | null
           manual_intervention?: boolean
           modifies_limit?: boolean
           modifies_term?: boolean
           operator?: string
           original_text?: string
           policy_id?: string
+          precedence?: number | null
+          segment?: string
           sort_order?: number
+          source_excerpt?: string
           threshold?: string
           updated_at?: string
           variable?: string
@@ -415,6 +496,13 @@ export type Database = {
             columns: ["integration_id"]
             isOneToOne: false
             referencedRelation: "policy_integrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_rules_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "policy_lines"
             referencedColumns: ["id"]
           },
           {
@@ -431,25 +519,31 @@ export type Database = {
           created_at: string
           from_node_id: string
           id: string
+          kind: string
           label: string
           policy_id: string
           to_node_id: string
+          trace_id: string | null
         }
         Insert: {
           created_at?: string
           from_node_id: string
           id?: string
+          kind?: string
           label?: string
           policy_id: string
           to_node_id: string
+          trace_id?: string | null
         }
         Update: {
           created_at?: string
           from_node_id?: string
           id?: string
+          kind?: string
           label?: string
           policy_id?: string
           to_node_id?: string
+          trace_id?: string | null
         }
         Relationships: [
           {
@@ -473,6 +567,13 @@ export type Database = {
             referencedRelation: "policy_siisa_nodes"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "policy_siisa_edges_trace_id_fkey"
+            columns: ["trace_id"]
+            isOneToOne: false
+            referencedRelation: "policy_traces"
+            referencedColumns: ["id"]
+          },
         ]
       }
       policy_siisa_nodes: {
@@ -489,8 +590,15 @@ export type Database = {
           notes: string
           outputs: string
           policy_id: string
+          pos_x: number
+          pos_y: number
+          question_id: string | null
           rule_id: string | null
+          siisa_transformation: string
           sort_order: number
+          source_excerpt: string
+          trace_id: string | null
+          version_label: string
         }
         Insert: {
           called_policy_id?: string | null
@@ -505,8 +613,15 @@ export type Database = {
           notes?: string
           outputs?: string
           policy_id: string
+          pos_x?: number
+          pos_y?: number
+          question_id?: string | null
           rule_id?: string | null
+          siisa_transformation?: string
           sort_order?: number
+          source_excerpt?: string
+          trace_id?: string | null
+          version_label?: string
         }
         Update: {
           called_policy_id?: string | null
@@ -521,8 +636,15 @@ export type Database = {
           notes?: string
           outputs?: string
           policy_id?: string
+          pos_x?: number
+          pos_y?: number
+          question_id?: string | null
           rule_id?: string | null
+          siisa_transformation?: string
           sort_order?: number
+          source_excerpt?: string
+          trace_id?: string | null
+          version_label?: string
         }
         Relationships: [
           {
@@ -547,10 +669,226 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "policy_siisa_nodes_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "policy_questions"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "policy_siisa_nodes_rule_id_fkey"
             columns: ["rule_id"]
             isOneToOne: false
             referencedRelation: "policy_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_siisa_nodes_trace_id_fkey"
+            columns: ["trace_id"]
+            isOneToOne: false
+            referencedRelation: "policy_traces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_traces: {
+        Row: {
+          based_on_trace_id: string | null
+          created_at: string
+          design_status: string
+          id: string
+          line_id: string | null
+          name: string
+          notes: string
+          policy_id: string
+          updated_at: string
+          version_label: string
+        }
+        Insert: {
+          based_on_trace_id?: string | null
+          created_at?: string
+          design_status?: string
+          id?: string
+          line_id?: string | null
+          name?: string
+          notes?: string
+          policy_id: string
+          updated_at?: string
+          version_label?: string
+        }
+        Update: {
+          based_on_trace_id?: string | null
+          created_at?: string
+          design_status?: string
+          id?: string
+          line_id?: string | null
+          name?: string
+          notes?: string
+          policy_id?: string
+          updated_at?: string
+          version_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_traces_based_on_trace_id_fkey"
+            columns: ["based_on_trace_id"]
+            isOneToOne: false
+            referencedRelation: "policy_traces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_traces_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "policy_lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_traces_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_variable_links: {
+        Row: {
+          created_at: string
+          id: string
+          node_id: string | null
+          role: string
+          rule_id: string | null
+          trace_id: string | null
+          variable_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          node_id?: string | null
+          role?: string
+          rule_id?: string | null
+          trace_id?: string | null
+          variable_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          node_id?: string | null
+          role?: string
+          rule_id?: string | null
+          trace_id?: string | null
+          variable_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_variable_links_node_id_fkey"
+            columns: ["node_id"]
+            isOneToOne: false
+            referencedRelation: "policy_siisa_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_variable_links_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "policy_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_variable_links_trace_id_fkey"
+            columns: ["trace_id"]
+            isOneToOne: false
+            referencedRelation: "policy_traces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_variable_links_variable_id_fkey"
+            columns: ["variable_id"]
+            isOneToOne: false
+            referencedRelation: "policy_variables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_variables: {
+        Row: {
+          code: string
+          created_at: string
+          data_type: string
+          description: string
+          id: string
+          integration_id: string | null
+          name: string
+          notes: string
+        }
+        Insert: {
+          code?: string
+          created_at?: string
+          data_type?: string
+          description?: string
+          id?: string
+          integration_id?: string | null
+          name: string
+          notes?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          data_type?: string
+          description?: string
+          id?: string
+          integration_id?: string | null
+          name?: string
+          notes?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_variables_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "policy_integrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_walkthroughs: {
+        Row: {
+          created_at: string
+          id: string
+          inputs: Json
+          notes: string
+          path: Json
+          title: string
+          trace_id: string
+          user_email: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inputs?: Json
+          notes?: string
+          path?: Json
+          title?: string
+          trace_id: string
+          user_email?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inputs?: Json
+          notes?: string
+          path?: Json
+          title?: string
+          trace_id?: string
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_walkthroughs_trace_id_fkey"
+            columns: ["trace_id"]
+            isOneToOne: false
+            referencedRelation: "policy_traces"
             referencedColumns: ["id"]
           },
         ]

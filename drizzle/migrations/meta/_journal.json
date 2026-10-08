@@ -22,6 +22,13 @@
       "when": 1791458824868,
       "tag": "0002_policy_docs_storage",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791460008402,
+      "tag": "0003_policy_studio",
+      "breakpoints": true
     }
   ]
 }
