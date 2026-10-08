@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import { RecordDialog, type Field } from "@/components/policies/record-dialog";
+import { TraceStudio } from "@/components/policies/trace-studio";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +21,7 @@ import {
   POLICY_STATUSES,
   QUESTION_STATUSES,
   RULE_STATUSES,
+  SEGMENTS,
   deleteRow,
   labelOf,
   logChange,
@@ -104,7 +106,10 @@ export function PolicyWorkspace({ bundle, editable }: { bundle: PolicyBundle; ed
     { name: "doc_date", label: "Fecha", kind: "date" },
     { name: "notes", label: "Observaciones", kind: "textarea" },
   ];
+  const lineOpts = bundle.lines.map((l: any) => ({ value: l.id, label: l.name }));
   const ruleFields: Field[] = [
+    { name: "line_id", label: "Línea (vacío = general)", kind: "select", options: lineOpts },
+    { name: "segment", label: "Segmento", kind: "select", options: SEGMENTS },
     { name: "code", label: "Código de regla" },
     { name: "block", label: "Bloque" },
     { name: "original_text", label: "Texto original de la política", kind: "textarea" },
@@ -114,7 +119,12 @@ export function PolicyWorkspace({ bundle, editable }: { bundle: PolicyBundle; ed
     { name: "operator", label: "Operador" },
     { name: "threshold", label: "Parámetro / umbral" },
     { name: "action_result", label: "Acción / resultado", full: true },
+    { name: "conditions", label: "Condiciones", kind: "textarea" },
+    { name: "effect", label: "Efecto", kind: "textarea" },
+    { name: "exceptions", label: "Excepciones", kind: "textarea" },
+    { name: "source_excerpt", label: "Extracto textual del manual", kind: "textarea" },
     { name: "definition_status", label: "Estado de definición", kind: "select", options: RULE_STATUSES },
+    { name: "precedence", label: "Precedencia", kind: "number" },
     { name: "sort_order", label: "Orden", kind: "number" },
     { name: "modifies_limit", label: "Modifica cupo", kind: "bool" },
     { name: "modifies_term", label: "Modifica plazo", kind: "bool" },
@@ -293,17 +303,22 @@ export function PolicyWorkspace({ bundle, editable }: { bundle: PolicyBundle; ed
 
   return (
     <>
-      <Tabs defaultValue="resumen">
+      <Tabs defaultValue="estudio">
         <TabsList className="flex h-auto flex-wrap justify-start">
+          <TabsTrigger value="estudio">Estudio de traza</TabsTrigger>
           <TabsTrigger value="resumen">Resumen</TabsTrigger>
           <TabsTrigger value="documentos">Documentos ({documents.length})</TabsTrigger>
           <TabsTrigger value="reglas">Reglas ({rules.length})</TabsTrigger>
           <TabsTrigger value="dudas">Dudas ({questions.filter((q) => q.status !== "resuelta").length})</TabsTrigger>
-          <TabsTrigger value="siisa">Diseño SIISA</TabsTrigger>
+          <TabsTrigger value="siisa">Nodos (tabla)</TabsTrigger>
           <TabsTrigger value="historial">Historial</TabsTrigger>
         </TabsList>
 
         {/* RESUMEN */}
+        <TabsContent value="estudio" className="mt-4">
+          <TraceStudio bundle={bundle} editable={editable} />
+        </TabsContent>
+
         <TabsContent value="resumen" className="mt-4">
           <Card>
             <CardContent className="grid gap-4 p-5 sm:grid-cols-2">
@@ -454,10 +469,9 @@ export function PolicyWorkspace({ bundle, editable }: { bundle: PolicyBundle; ed
             Diseño interno de la futura traza en el Motor de Decisiones SIISA. Es solo un registro: nada de esto se publica ni se conecta con SIISA.
           </p>
           <div className="flex justify-end gap-2">
-            {editable && nodes.length >= 2 && <Button size="sm" variant="outline" onClick={openEdge}><Plus className="size-4" />Conexión</Button>}
-            <Add onClick={() => openNode()}>Agregar nodo</Add>
+            <span className="text-xs text-muted-foreground">Los nodos se crean y conectan desde «Estudio de traza».</span>
           </div>
-          <SiisaFlow nodes={nodes} edges={edges} policyById={policyById} />
+          
           {nodes.length > 0 && (
             <div className="overflow-x-auto">
               <Table className="text-xs">
