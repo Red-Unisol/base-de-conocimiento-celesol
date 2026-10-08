@@ -8,6 +8,13 @@
       "when": 1790600639929,
       "tag": "0000_add_riesgo_role",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791458807014,
+      "tag": "0001_policies_module",
+      "breakpoints": true
     }
   ]
 }

@@ -85,6 +85,476 @@ export type Database = {
         }
         Relationships: []
       }
+      policies: {
+        Row: {
+          code: string
+          created_at: string
+          description: string
+          id: string
+          name: string
+          parent_policy_id: string | null
+          scope: string
+          slug: string
+          sort_order: number
+          source_url: string | null
+          status: string
+          updated_at: string
+          working_version: string
+        }
+        Insert: {
+          code?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          parent_policy_id?: string | null
+          scope?: string
+          slug: string
+          sort_order?: number
+          source_url?: string | null
+          status?: string
+          updated_at?: string
+          working_version?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          parent_policy_id?: string | null
+          scope?: string
+          slug?: string
+          sort_order?: number
+          source_url?: string | null
+          status?: string
+          updated_at?: string
+          working_version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policies_parent_policy_id_fkey"
+            columns: ["parent_policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_change_log: {
+        Row: {
+          change_type: string
+          created_at: string
+          description: string
+          id: string
+          policy_id: string
+          user_email: string
+          user_id: string | null
+          version_label: string
+        }
+        Insert: {
+          change_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          policy_id: string
+          user_email?: string
+          user_id?: string | null
+          version_label?: string
+        }
+        Update: {
+          change_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          policy_id?: string
+          user_email?: string
+          user_id?: string | null
+          version_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_change_log_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_documents: {
+        Row: {
+          created_at: string
+          doc_date: string | null
+          doc_type: string
+          external_url: string | null
+          id: string
+          notes: string
+          policy_id: string
+          storage_path: string | null
+          title: string
+          version_label: string
+        }
+        Insert: {
+          created_at?: string
+          doc_date?: string | null
+          doc_type?: string
+          external_url?: string | null
+          id?: string
+          notes?: string
+          policy_id: string
+          storage_path?: string | null
+          title: string
+          version_label?: string
+        }
+        Update: {
+          created_at?: string
+          doc_date?: string | null
+          doc_type?: string
+          external_url?: string | null
+          id?: string
+          notes?: string
+          policy_id?: string
+          storage_path?: string | null
+          title?: string
+          version_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_documents_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_integrations: {
+        Row: {
+          code: string
+          created_at: string
+          description: string
+          id: string
+          kind: string
+          name: string
+          notes: string
+          status: string
+        }
+        Insert: {
+          code?: string
+          created_at?: string
+          description?: string
+          id?: string
+          kind?: string
+          name: string
+          notes?: string
+          status?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string
+          id?: string
+          kind?: string
+          name?: string
+          notes?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      policy_question_rules: {
+        Row: {
+          question_id: string
+          rule_id: string
+        }
+        Insert: {
+          question_id: string
+          rule_id: string
+        }
+        Update: {
+          question_id?: string
+          rule_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_question_rules_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "policy_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_question_rules_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "policy_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_questions: {
+        Row: {
+          agreed_definition: string
+          answer: string
+          code: string
+          created_at: string
+          id: string
+          policy_id: string
+          question: string
+          status: string
+          updated_at: string
+          validated_at: string | null
+          validated_by: string
+          validity_scope: string
+        }
+        Insert: {
+          agreed_definition?: string
+          answer?: string
+          code?: string
+          created_at?: string
+          id?: string
+          policy_id: string
+          question: string
+          status?: string
+          updated_at?: string
+          validated_at?: string | null
+          validated_by?: string
+          validity_scope?: string
+        }
+        Update: {
+          agreed_definition?: string
+          answer?: string
+          code?: string
+          created_at?: string
+          id?: string
+          policy_id?: string
+          question?: string
+          status?: string
+          updated_at?: string
+          validated_at?: string | null
+          validated_by?: string
+          validity_scope?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_questions_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_rules: {
+        Row: {
+          action_result: string
+          allows_exception: boolean
+          block: string
+          code: string
+          created_at: string
+          data_source: string
+          definition_status: Database["public"]["Enums"]["policy_rule_status"]
+          id: string
+          integration_id: string | null
+          manual_intervention: boolean
+          modifies_limit: boolean
+          modifies_term: boolean
+          operator: string
+          original_text: string
+          policy_id: string
+          sort_order: number
+          threshold: string
+          updated_at: string
+          variable: string
+        }
+        Insert: {
+          action_result?: string
+          allows_exception?: boolean
+          block?: string
+          code?: string
+          created_at?: string
+          data_source?: string
+          definition_status?: Database["public"]["Enums"]["policy_rule_status"]
+          id?: string
+          integration_id?: string | null
+          manual_intervention?: boolean
+          modifies_limit?: boolean
+          modifies_term?: boolean
+          operator?: string
+          original_text?: string
+          policy_id: string
+          sort_order?: number
+          threshold?: string
+          updated_at?: string
+          variable?: string
+        }
+        Update: {
+          action_result?: string
+          allows_exception?: boolean
+          block?: string
+          code?: string
+          created_at?: string
+          data_source?: string
+          definition_status?: Database["public"]["Enums"]["policy_rule_status"]
+          id?: string
+          integration_id?: string | null
+          manual_intervention?: boolean
+          modifies_limit?: boolean
+          modifies_term?: boolean
+          operator?: string
+          original_text?: string
+          policy_id?: string
+          sort_order?: number
+          threshold?: string
+          updated_at?: string
+          variable?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_rules_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "policy_integrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_rules_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_siisa_edges: {
+        Row: {
+          created_at: string
+          from_node_id: string
+          id: string
+          label: string
+          policy_id: string
+          to_node_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_node_id: string
+          id?: string
+          label?: string
+          policy_id: string
+          to_node_id: string
+        }
+        Update: {
+          created_at?: string
+          from_node_id?: string
+          id?: string
+          label?: string
+          policy_id?: string
+          to_node_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_siisa_edges_from_node_id_fkey"
+            columns: ["from_node_id"]
+            isOneToOne: false
+            referencedRelation: "policy_siisa_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_siisa_edges_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_siisa_edges_to_node_id_fkey"
+            columns: ["to_node_id"]
+            isOneToOne: false
+            referencedRelation: "policy_siisa_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      policy_siisa_nodes: {
+        Row: {
+          called_policy_id: string | null
+          created_at: string
+          data_origin: string
+          id: string
+          impl_status: string
+          inputs: string
+          integration_id: string | null
+          label: string
+          node_type: string
+          notes: string
+          outputs: string
+          policy_id: string
+          rule_id: string | null
+          sort_order: number
+        }
+        Insert: {
+          called_policy_id?: string | null
+          created_at?: string
+          data_origin?: string
+          id?: string
+          impl_status?: string
+          inputs?: string
+          integration_id?: string | null
+          label?: string
+          node_type?: string
+          notes?: string
+          outputs?: string
+          policy_id: string
+          rule_id?: string | null
+          sort_order?: number
+        }
+        Update: {
+          called_policy_id?: string | null
+          created_at?: string
+          data_origin?: string
+          id?: string
+          impl_status?: string
+          inputs?: string
+          integration_id?: string | null
+          label?: string
+          node_type?: string
+          notes?: string
+          outputs?: string
+          policy_id?: string
+          rule_id?: string | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_siisa_nodes_called_policy_id_fkey"
+            columns: ["called_policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_siisa_nodes_integration_id_fkey"
+            columns: ["integration_id"]
+            isOneToOne: false
+            referencedRelation: "policy_integrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_siisa_nodes_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "policy_siisa_nodes_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "policy_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       process_chunks: {
         Row: {
           chunk_index: number
@@ -304,6 +774,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer" | "usuario" | "it" | "riesgo"
+      policy_rule_status:
+        | "CONFIRMADA"
+        | "PENDIENTE_VALIDACION"
+        | "INCOMPLETA_EN_MANUAL"
+        | "CONTRADICCION_A_RESOLVER"
+        | "NO_AUTOMATIZABLE_HOY"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -432,6 +908,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "editor", "viewer", "usuario", "it", "riesgo"],
+      policy_rule_status: [
+        "CONFIRMADA",
+        "PENDIENTE_VALIDACION",
+        "INCOMPLETA_EN_MANUAL",
+        "CONTRADICCION_A_RESOLVER",
+        "NO_AUTOMATIZABLE_HOY",
+      ],
     },
   },
 } as const
