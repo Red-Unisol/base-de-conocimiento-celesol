@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { RecordDialog, type Field } from "@/components/policies/record-dialog";
 import { TraceStudio } from "@/components/policies/trace-studio";
+import { TraceView } from "@/components/policies/trace-view";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -303,8 +304,9 @@ export function PolicyWorkspace({ bundle, editable }: { bundle: PolicyBundle; ed
 
   return (
     <>
-      <Tabs defaultValue="estudio">
+      <Tabs defaultValue="vista">
         <TabsList className="flex h-auto flex-wrap justify-start">
+          <TabsTrigger value="vista">Vista de traza</TabsTrigger>
           <TabsTrigger value="estudio">Estudio de traza</TabsTrigger>
           <TabsTrigger value="resumen">Resumen</TabsTrigger>
           <TabsTrigger value="documentos">Documentos ({documents.length})</TabsTrigger>
@@ -315,6 +317,10 @@ export function PolicyWorkspace({ bundle, editable }: { bundle: PolicyBundle; ed
         </TabsList>
 
         {/* RESUMEN */}
+        <TabsContent value="vista" className="mt-4">
+          <TraceView bundle={bundle} />
+        </TabsContent>
+
         <TabsContent value="estudio" className="mt-4">
           <TraceStudio bundle={bundle} editable={editable} />
         </TabsContent>
