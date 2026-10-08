@@ -14,8 +14,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DefinirClaveRouteImport } from './routes/definir-clave'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminPoliticasRouteImport } from './routes/_authenticated/admin.politicas'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 import { Route as AuthenticatedCategoriaSlugRouteImport } from './routes/_authenticated/categoria.$slug'
+import { Route as AuthenticatedPoliticasIndexRouteImport } from './routes/_authenticated/politicas.index'
+import { Route as AuthenticatedPoliticasSlugRouteImport } from './routes/_authenticated/politicas.$slug'
 import { Route as AuthenticatedProcesoSlugRouteImport } from './routes/_authenticated/proceso.$slug'
 import { Route as AuthenticatedAdminProcesoIdRouteImport } from './routes/_authenticated/admin.proceso.$id'
 
@@ -43,6 +46,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminPoliticasRoute =
+  AuthenticatedAdminPoliticasRouteImport.update({
+    id: '/admin/politicas',
+    path: '/admin/politicas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminUsuariosRoute =
   AuthenticatedAdminUsuariosRouteImport.update({
     id: '/admin/usuarios',
@@ -53,6 +62,18 @@ const AuthenticatedCategoriaSlugRoute =
   AuthenticatedCategoriaSlugRouteImport.update({
     id: '/categoria/$slug',
     path: '/categoria/$slug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPoliticasIndexRoute =
+  AuthenticatedPoliticasIndexRouteImport.update({
+    id: '/politicas/',
+    path: '/politicas/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPoliticasSlugRoute =
+  AuthenticatedPoliticasSlugRouteImport.update({
+    id: '/politicas/$slug',
+    path: '/politicas/$slug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedProcesoSlugRoute =
@@ -72,20 +93,26 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/definir-clave': typeof DefinirClaveRoute
+  '/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
+  '/politicas/$slug': typeof AuthenticatedPoliticasSlugRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/politicas/': typeof AuthenticatedPoliticasIndexRoute
   '/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/definir-clave': typeof DefinirClaveRoute
   '/': typeof AuthenticatedIndexRoute
+  '/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
+  '/politicas/$slug': typeof AuthenticatedPoliticasSlugRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/politicas': typeof AuthenticatedPoliticasIndexRoute
   '/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
 }
 export interface FileRoutesById {
@@ -94,10 +121,13 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/definir-clave': typeof DefinirClaveRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
+  '/_authenticated/politicas/$slug': typeof AuthenticatedPoliticasSlugRoute
   '/_authenticated/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/politicas/': typeof AuthenticatedPoliticasIndexRoute
   '/_authenticated/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
 }
 export interface FileRouteTypes {
@@ -106,20 +136,26 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/definir-clave'
+    | '/admin/politicas'
     | '/admin/usuarios'
     | '/categoria/$slug'
+    | '/politicas/$slug'
     | '/proceso/$slug'
     | '/admin/'
+    | '/politicas/'
     | '/admin/proceso/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/definir-clave'
     | '/'
+    | '/admin/politicas'
     | '/admin/usuarios'
     | '/categoria/$slug'
+    | '/politicas/$slug'
     | '/proceso/$slug'
     | '/admin'
+    | '/politicas'
     | '/admin/proceso/$id'
   id:
     | '__root__'
@@ -127,10 +163,13 @@ export interface FileRouteTypes {
     | '/auth'
     | '/definir-clave'
     | '/_authenticated/'
+    | '/_authenticated/admin/politicas'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/categoria/$slug'
+    | '/_authenticated/politicas/$slug'
     | '/_authenticated/proceso/$slug'
     | '/_authenticated/admin/'
+    | '/_authenticated/politicas/'
     | '/_authenticated/admin/proceso/$id'
   fileRoutesById: FileRoutesById
 }
@@ -177,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/politicas': {
+      id: '/_authenticated/admin/politicas'
+      path: '/admin/politicas'
+      fullPath: '/admin/politicas'
+      preLoaderRoute: typeof AuthenticatedAdminPoliticasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/usuarios': {
       id: '/_authenticated/admin/usuarios'
       path: '/admin/usuarios'
@@ -189,6 +235,20 @@ declare module '@tanstack/react-router' {
       path: '/categoria/$slug'
       fullPath: '/categoria/$slug'
       preLoaderRoute: typeof AuthenticatedCategoriaSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/politicas/': {
+      id: '/_authenticated/politicas/'
+      path: '/politicas'
+      fullPath: '/politicas/'
+      preLoaderRoute: typeof AuthenticatedPoliticasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/politicas/$slug': {
+      id: '/_authenticated/politicas/$slug'
+      path: '/politicas/$slug'
+      fullPath: '/politicas/$slug'
+      preLoaderRoute: typeof AuthenticatedPoliticasSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/proceso/$slug': {
@@ -210,19 +270,25 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedAdminPoliticasRoute: typeof AuthenticatedAdminPoliticasRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedCategoriaSlugRoute: typeof AuthenticatedCategoriaSlugRoute
+  AuthenticatedPoliticasSlugRoute: typeof AuthenticatedPoliticasSlugRoute
   AuthenticatedProcesoSlugRoute: typeof AuthenticatedProcesoSlugRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedPoliticasIndexRoute: typeof AuthenticatedPoliticasIndexRoute
   AuthenticatedAdminProcesoIdRoute: typeof AuthenticatedAdminProcesoIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedAdminPoliticasRoute: AuthenticatedAdminPoliticasRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedCategoriaSlugRoute: AuthenticatedCategoriaSlugRoute,
+  AuthenticatedPoliticasSlugRoute: AuthenticatedPoliticasSlugRoute,
   AuthenticatedProcesoSlugRoute: AuthenticatedProcesoSlugRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedPoliticasIndexRoute: AuthenticatedPoliticasIndexRoute,
   AuthenticatedAdminProcesoIdRoute: AuthenticatedAdminProcesoIdRoute,
 }
 
