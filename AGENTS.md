@@ -8,3 +8,4 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- The "Políticas" module (SIISA policy design) lives in its own `policies*` tables, `policy-docs` bucket and `/politicas` + `/admin/politicas` routes, fully separate from processes/categories, so the RAG and process permissions stay untouched.

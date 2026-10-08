@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BookOpen, Home, Upload, Users } from "lucide-react";
+import { BookOpen, Home, Scale, Upload, Users } from "lucide-react";
 
 import {
   Sidebar,
@@ -57,6 +57,22 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
+          <SidebarGroupLabel>Motor de políticas</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas")} tooltip="Políticas">
+                  <Link to="/politicas">
+                    <Scale />
+                    <span>Políticas</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
           <SidebarGroupLabel>Categorías de procesos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -95,6 +111,18 @@ export function AppSidebar() {
                 <Link to="/admin">
                   <Upload />
                   <span>Cargar material</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === "/admin/politicas"}
+                tooltip="Administrar políticas"
+              >
+                <Link to="/admin/politicas">
+                  <Scale />
+                  <span>Administrar políticas</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
