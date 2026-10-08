@@ -48,8 +48,8 @@ export function RecordDialog({
   onOpenChange: (o: boolean) => void;
   title: string;
   fields: Field[];
-  initial: Record<string, any>;
-  onSubmit: (values: Record<string, any>) => Promise<void>;
+  initial: any;
+  onSubmit: (values: any) => Promise<void>;
   extra?: ReactNode;
 }) {
   const [values, setValues] = useState<Record<string, any>>(initial);

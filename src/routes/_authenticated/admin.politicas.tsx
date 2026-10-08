@@ -26,8 +26,8 @@ import {
 } from "@/lib/policies";
 
 export const Route = createFileRoute("/_authenticated/admin/politicas")({
-  validateSearch: (s: Record<string, unknown>): { p?: string } => ({
-    p: typeof s.p === "string" ? s.p : undefined,
+  validateSearch: (s: Record<string, unknown>): { p?: string | undefined } => ({
+    p: typeof s["p"] === "string" ? (s["p"] as string) : undefined,
   }),
   head: () => ({
     meta: [

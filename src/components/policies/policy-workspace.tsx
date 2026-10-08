@@ -551,10 +551,12 @@ function SiisaFlow({ nodes, edges, policyById }: { nodes: any[]; edges: any[]; p
   let guard = 0;
   while (queue.length && guard++ < 1000) {
     const id = queue.shift()!;
+    const cur = level[id] ?? 0;
     for (const e of edges.filter((x) => x.from_node_id === id)) {
-      if (level[e.to_node_id] === undefined || level[e.to_node_id] < level[id] + 1) {
-        if (level[id] + 1 < nodes.length) {
-          level[e.to_node_id] = level[id] + 1;
+      const lv = level[e.to_node_id];
+      if (lv === undefined || lv < cur + 1) {
+        if (cur + 1 < nodes.length) {
+          level[e.to_node_id] = cur + 1;
           queue.push(e.to_node_id);
         }
       }
@@ -562,7 +564,7 @@ function SiisaFlow({ nodes, edges, policyById }: { nodes: any[]; edges: any[]; p
   }
   nodes.forEach((n) => (level[n.id] ??= 0));
   const cols: any[][] = [];
-  nodes.forEach((n) => (cols[level[n.id]] ??= []).push(n));
+  nodes.forEach((n) => (cols[level[n.id] ?? 0] ??= []).push(n));
   return (
     <div className="flex items-stretch gap-3 overflow-x-auto rounded-lg border border-border bg-muted/30 p-4">
       {cols.map((col, i) => (
