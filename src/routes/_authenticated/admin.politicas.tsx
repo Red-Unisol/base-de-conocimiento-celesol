@@ -101,6 +101,7 @@ function AdminPolicies() {
         ) : null}
 
         <IntegrationsCatalog />
+        <VariablesCatalog />
       </div>
 
       <RecordDialog
@@ -195,6 +196,74 @@ function IntegrationsCatalog() {
           const { name, code, kind, status, description, notes } = v;
           try {
             await saveRow("policy_integrations", { name, code: code ?? "", kind: kind ?? "", status: status ?? "no_definido", description: description ?? "", notes: notes ?? "" }, edit?.id);
+            toast.success("Guardado");
+            refresh();
+          } catch (e: any) { toast.error(e?.message); throw e; }
+        }}
+      />
+    </Card>
+  );
+}
+
+function VariablesCatalog() {
+  const qc = useQueryClient();
+  const q = useQuery({
+    queryKey: ["policy-variables"],
+    queryFn: async () => {
+      const [v, i] = await Promise.all([
+        supabase.from("policy_variables").select("*").order("name"),
+        supabase.from("policy_integrations").select("id, name").order("name"),
+      ]);
+      if (v.error) throw v.error;
+      if (i.error) throw i.error;
+      return { vars: v.data, integ: i.data };
+    },
+  });
+  const [edit, setEdit] = useState<any | null>(null);
+  const refresh = () => {
+    void qc.invalidateQueries({ queryKey: ["policy-variables"] });
+    void qc.invalidateQueries({ queryKey: ["policy"] });
+  };
+  const integ = q.data?.integ ?? [];
+  const fields: Field[] = [
+    { name: "code", label: "Código" },
+    { name: "name", label: "Nombre" },
+    { name: "data_type", label: "Tipo de dato" },
+    { name: "integration_id", label: "Fuente", kind: "select", options: integ.map((i) => ({ value: i.id, label: i.name })) },
+    { name: "description", label: "Descripción", kind: "textarea" },
+    { name: "notes", label: "Notas", kind: "textarea" },
+  ];
+  return (
+    <Card>
+      <CardHeader className="flex-row items-center justify-between space-y-0">
+        <CardTitle className="flex items-center gap-2 text-base"><Database className="size-4" />Catálogo de variables</CardTitle>
+        <Button size="sm" variant="outline" onClick={() => setEdit({})}><Plus className="size-4" />Agregar</Button>
+      </CardHeader>
+      <CardContent className="grid gap-2 text-sm sm:grid-cols-2">
+        {(q.data?.vars ?? []).map((v) => (
+          <div key={v.id} className="flex items-center gap-2 rounded-md border border-border px-3 py-2">
+            <div className="flex-1">
+              <div className="font-medium">{v.code} <span className="text-xs text-muted-foreground">{v.name}</span></div>
+              <div className="text-xs text-muted-foreground">{v.data_type || "—"} · {integ.find((i) => i.id === v.integration_id)?.name ?? "sin fuente"}</div>
+            </div>
+            <Button size="icon" variant="ghost" className="size-7" onClick={() => setEdit(v)}><Pencil className="size-3.5" /></Button>
+            <Button size="icon" variant="ghost" className="size-7" onClick={async () => {
+              if (!confirm(`¿Eliminar «${v.name}»?`)) return;
+              try { await deleteRow("policy_variables", v.id); refresh(); } catch (e: any) { toast.error(e?.message); }
+            }}><Trash2 className="size-3.5" /></Button>
+          </div>
+        ))}
+      </CardContent>
+      <RecordDialog
+        open={Boolean(edit)}
+        onOpenChange={(o) => !o && setEdit(null)}
+        title={edit?.id ? "Editar variable" : "Nueva variable"}
+        fields={fields}
+        initial={edit ?? {}}
+        onSubmit={async (v) => {
+          if (!v.name?.trim()) { toast.error("El nombre es obligatorio"); throw new Error("nombre"); }
+          try {
+            await saveRow("policy_variables", { code: v.code ?? "", name: v.name, data_type: v.data_type ?? "", integration_id: v.integration_id || null, description: v.description ?? "", notes: v.notes ?? "" }, edit?.id);
             toast.success("Guardado");
             refresh();
           } catch (e: any) { toast.error(e?.message); throw e; }

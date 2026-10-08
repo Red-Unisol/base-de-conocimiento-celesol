@@ -129,14 +129,14 @@ function EngineMap({ policies }: { policies: PolicySummary[] }) {
   const byId = Object.fromEntries(policies.map((p) => [p.id, p]));
   const roots = policies.filter((p) => !p.parent_policy_id || !byId[p.parent_policy_id]);
   const children = (id: string) => policies.filter((p) => p.parent_policy_id === id);
-  const anyLinks = policies.some((p) => p.parent_policy_id || p.calls.length);
+  const anyLinks = policies.some((p) => p.parent_policy_id || p.calls.length || p.lines.length);
 
   return (
     <div className="rounded-lg border border-border bg-card p-5">
       <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Mapa del motor</h2>
       <p className="mt-1 text-xs text-muted-foreground">
         {anyLinks
-          ? "Políticas principales, subpolíticas y llamadas registradas en el diseño SIISA."
+          ? "Políticas, sus líneas, subpolíticas, llamadas y fuentes de datos registradas en el diseño (propuesta, no SIISA real)."
           : "Todavía no hay dependencias cargadas. Se arman al asignar una política principal o al registrar nodos SIISA que llamen a otra política."}
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -145,7 +145,10 @@ function EngineMap({ policies }: { policies: PolicySummary[] }) {
             <Link to="/politicas/$slug" params={{ slug: p.slug }} className="text-sm font-semibold hover:text-brand">
               {p.name}
             </Link>
-            <div className="mt-1 text-[10px] text-muted-foreground">{p.nodes} nodos SIISA</div>
+            <div className="mt-1 text-[10px] text-muted-foreground">{p.lines.length} líneas · {p.nodes} nodos · {p.sources.length} fuentes</div>
+            {p.lines.map((l) => (
+              <div key={l} className="mt-1 text-xs">• {l}</div>
+            ))}
             {children(p.id).map((c) => (
               <div key={c.id} className="mt-1.5 border-l-2 border-brand pl-2 text-xs">
                 Subpolítica: {c.name}

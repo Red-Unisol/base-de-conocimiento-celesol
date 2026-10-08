@@ -102,13 +102,15 @@ export type PolicySummary = {
   documents: number;
   nodes: number;
   calls: string[]; // ids de políticas llamadas desde nodos SIISA
+  lines: string[];
+  sources: string[]; // ids de integraciones usadas por nodos
 };
 
 export async function fetchPolicySummaries(): Promise<PolicySummary[]> {
   const { data, error } = await supabase
     .from("policies")
     .select(
-      "id, slug, code, name, description, status, working_version, parent_policy_id, updated_at, policy_rules(id), policy_documents(id), policy_questions(id, status), policy_siisa_nodes!policy_siisa_nodes_policy_id_fkey(id, called_policy_id)",
+      "id, slug, code, name, description, status, working_version, parent_policy_id, updated_at, policy_rules(id), policy_documents(id), policy_questions(id, status), policy_siisa_nodes!policy_siisa_nodes_policy_id_fkey(id, called_policy_id, integration_id), policy_lines(id, name)",
     )
     .order("sort_order")
     .order("name");
@@ -128,6 +130,8 @@ export async function fetchPolicySummaries(): Promise<PolicySummary[]> {
     openQuestions: (p.policy_questions ?? []).filter((q: any) => q.status !== "resuelta").length,
     nodes: p.policy_siisa_nodes?.length ?? 0,
     calls: (p.policy_siisa_nodes ?? []).map((n: any) => n.called_policy_id).filter(Boolean),
+    lines: (p.policy_lines ?? []).map((l: any) => l.name),
+    sources: [...new Set<string>((p.policy_siisa_nodes ?? []).map((n: any) => n.integration_id).filter(Boolean))],
   }));
 }
 
