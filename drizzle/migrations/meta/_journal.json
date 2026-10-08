@@ -29,6 +29,13 @@
       "when": 1791460008402,
       "tag": "0003_policy_studio",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791464022751,
+      "tag": "0004_siisa_node_config",
+      "breakpoints": true
     }
   ]
 }

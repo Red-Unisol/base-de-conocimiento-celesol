@@ -579,6 +579,7 @@ export type Database = {
       policy_siisa_nodes: {
         Row: {
           called_policy_id: string | null
+          config_siisa: Json
           created_at: string
           data_origin: string
           id: string
@@ -602,6 +603,7 @@ export type Database = {
         }
         Insert: {
           called_policy_id?: string | null
+          config_siisa?: Json
           created_at?: string
           data_origin?: string
           id?: string
@@ -625,6 +627,7 @@ export type Database = {
         }
         Update: {
           called_policy_id?: string | null
+          config_siisa?: Json
           created_at?: string
           data_origin?: string
           id?: string

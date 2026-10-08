@@ -29,7 +29,11 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { NodeInspector } from "@/components/policies/node-inspector";
 import { RecordDialog, type Field } from "@/components/policies/record-dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { SIISA_TYPES, download as dl, exportSpecJson, exportSpecMarkdown, getConfig, normType, traceIssues } from "@/lib/siisa";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -87,12 +91,15 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
   const [walkInputs, setWalkInputs] = useState<Record<string, string>>({});
   const [compareId, setCompareId] = useState<string | null>(null);
 
+  const isMobile = useIsMobile();
+  const issues = useMemo(() => (trace ? traceIssues(bundle, trace.id) : []), [bundle, trace]);
+  const [edgeDraft, setEdgeDraft] = useState<{ kind: string; label: string } | null>(null);
   const ruleById = Object.fromEntries(rules.map((r) => [r.id, r]));
   const nodeById = Object.fromEntries(tNodes.map((n) => [n.id, n]));
 
   const evaluable = (n: any) => {
     const r = n.rule_id ? ruleById[n.rule_id] : null;
-    if (["Inicio", "Comentario"].includes(n.node_type)) return true;
+    if (["Inicio", "Comentario"].includes(normType(n.node_type))) return true;
     return Boolean(r && r.definition_status === "CONFIRMADA" && r.variable && r.operator && r.threshold);
   };
 
@@ -108,17 +115,31 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
           id: n.id,
           position: { x: n.pos_x || (i % 4) * 220, y: n.pos_y || Math.floor(i / 4) * 140 },
           data: {
-            label: (
-              <div className="text-left">
-                <div className="text-[9px] font-semibold uppercase tracking-wider text-brand">{n.node_type}</div>
-                <div className="text-xs font-medium leading-tight">{n.label || "(sin nombre)"}</div>
-                {n.rule_id && <div className="mt-0.5 text-[9px] text-muted-foreground">{ruleById[n.rule_id]?.code}</div>}
-                {!evaluable(n) && <div className="mt-0.5 text-[9px] font-semibold text-destructive">NO EVALUABLE</div>}
-              </div>
-            ),
+            label: (() => {
+              const c = getConfig(n);
+              const pend = issues.filter((x) => x.nodeId === n.id).length;
+              const gen = c.outputs.map((o) => o.name).filter(Boolean);
+              const t = normType(n.node_type);
+              if (t === "Cálculo" && c.t["output_variable"]) gen.unshift(c.t["output_variable"]);
+              if (t === "Decisión") gen.unshift(`dictamen: ${c.t["verdict"] || "PENDIENTE"}`);
+              return (
+                <div className="space-y-0.5 text-left">
+                  <div className="text-[9px] font-semibold uppercase tracking-wider text-brand">{t}</div>
+                  <div className="text-xs font-semibold leading-tight">{n.label || "(sin nombre)"}</div>
+                  {t !== "Comentario" && (
+                    <>
+                      <div className="text-[9px] leading-tight"><span className="text-muted-foreground">Recibe:</span> {c.inputs.map((i) => i.name).filter(Boolean).join(", ") || "—"}</div>
+                      <div className="text-[9px] leading-tight"><span className="text-muted-foreground">Genera:</span> {[...new Set(gen)].join(", ") || "—"}</div>
+                    </>
+                  )}
+                  {t === "Test Binario" && <div className="font-mono text-[9px]">{c.t["variable"] || "?"} {c.t["operator"] || "?"} {c.t["compare_kind"] === "variable" ? c.t["compare_variable"] || "?" : c.t["threshold"] || "?"}</div>}
+                  {pend > 0 ? <div className="text-[9px] font-semibold text-destructive">{pend} pendiente(s)</div> : <div className="text-[9px] text-brand">Completo en diseño</div>}
+                </div>
+              );
+            })(),
           },
           style: {
-            width: 170,
+            width: 190,
             borderRadius: 8,
             padding: 8,
             background: "var(--color-card)",
@@ -131,7 +152,7 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tNodes, walk, focusRule, selected, editable, rules]);
+  }, [tNodes, walk, focusRule, selected, editable, rules, issues]);
 
   const rfEdges: Edge[] = tEdges.map((e) => {
     const walked = walk ? walk.some((id, i) => id === e.from_node_id && walk[i + 1] === e.to_node_id) : false;
@@ -140,10 +161,11 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
       id: e.id,
       source: e.from_node_id,
       target: e.to_node_id,
-      label: e.label || labelOf(EDGE_KINDS, e.kind),
+      label: `${e.kind === "verdadero" ? "✓ VERDADERO" : e.kind === "falso" ? "✗ FALSO" : "· secundaria"}${e.label ? ` — ${e.label}` : ""}`,
       animated: walked,
-      style: { stroke: color, strokeWidth: walked || selectedEdge === e.id ? 3 : 1.5, strokeDasharray: e.kind === "secundaria" ? "4 3" : undefined },
-      labelStyle: { fontSize: 10, fill: color },
+      style: { stroke: color, strokeWidth: walked || selectedEdge === e.id ? 3 : 1.5, strokeDasharray: e.kind === "falso" ? "6 4" : e.kind === "secundaria" ? "2 3" : "0" },
+      labelStyle: { fontSize: 10, fontWeight: 600, fill: color },
+      labelBgStyle: { fill: "var(--color-card)" },
       markerEnd: { type: MarkerType.ArrowClosed, color },
     };
   });
@@ -302,6 +324,43 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
       }),
     });
 
+  async function addNode(type: string) {
+    if (!trace) return;
+    try {
+      const i = tNodes.length;
+      const n = await saveRow("policy_siisa_nodes", {
+        policy_id: policy.id, trace_id: trace.id, node_type: type, label: type, impl_status: "no_definido",
+        sort_order: i + 1, pos_x: 40 + (i % 4) * 230, pos_y: 40 + Math.floor(i / 4) * 170, version_label: trace.version_label,
+        config_siisa: { description: "", inputs: [], outputs: [], t: {} },
+      });
+      await logChange(policy.id, "siisa", `Agregó nodo ${type} en ${trace.name} ${trace.version_label}`, trace.version_label);
+      setSelected(n.id);
+      refresh();
+    } catch (e: any) {
+      toast.error(e?.message ?? "No se pudo agregar");
+    }
+  }
+  async function saveNode(patch: Record<string, any>) {
+    if (!sel || !trace) return;
+    try {
+      await saveRow("policy_siisa_nodes", patch, sel.id);
+      await logChange(policy.id, "siisa", `Editó nodo «${patch["label"] || patch["node_type"]}» en ${trace.version_label}`, trace.version_label);
+      toast.success("Nodo guardado");
+      refresh();
+    } catch (e: any) {
+      toast.error(e?.message ?? "No se pudo guardar");
+    }
+  }
+  async function saveEdge() {
+    if (!selectedEdge || !edgeDraft) return;
+    try {
+      await saveRow("policy_siisa_edges", { kind: edgeDraft.kind, label: edgeDraft.label }, selectedEdge);
+      await logChange(policy.id, "siisa", `Editó conexión (${edgeDraft.kind})`, trace?.version_label);
+      refresh();
+    } catch (e: any) {
+      toast.error(e?.message ?? "No se pudo guardar");
+    }
+  }
   async function removeNode(id: string) {
     if (!confirm("¿Eliminar este nodo y sus conexiones?")) return;
     await deleteRow("policy_siisa_nodes", id);
@@ -449,7 +508,8 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
             ) : (
               <Button size="sm" variant="outline" onClick={startWalk} disabled={!tNodes.length}><Play className="size-4" />Recorrido manual</Button>
             ))}
-            {trace && <Button size="sm" variant="outline" onClick={download}><Download className="size-4" />Exportar</Button>}
+            {trace && <Button size="sm" onClick={() => dl(`${policy.slug}-${line?.code || "general"}-${trace.version_label}-SIISA.md`, exportSpecMarkdown(bundle, trace.id), "text/markdown")}><Download className="size-4" />Exportar especificación SIISA</Button>}
+            {trace && <Button size="sm" variant="outline" onClick={() => dl(`${policy.slug}-${line?.code || "general"}-${trace.version_label}-SIISA.json`, JSON.stringify(exportSpecJson(bundle, trace.id), null, 2), "application/json")}>JSON</Button>}
           </div>
         </div>
       )}
@@ -463,23 +523,36 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
       )}
 
       {trace && (
-        <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
           {/* Canvas */}
-          <div className="relative h-[520px] overflow-hidden rounded-lg border border-border bg-muted/20">
+          <div className="relative h-[60vh] min-h-[380px] overflow-hidden lg:h-[560px] rounded-lg border border-border bg-muted/20">
             {editable && !walk && (
               <div className="absolute left-2 top-2 z-10 flex items-center gap-2 rounded-md border border-border bg-card p-1.5 text-xs shadow-sm">
-                <Button size="sm" className="h-7" onClick={() => openNode()}><Plus className="size-3.5" />Nodo</Button>
-                <span className="text-muted-foreground">Arrastrá entre nodos para conectar como</span>
+                <Select value="" onValueChange={(v) => addNode(v)}>
+                  <SelectTrigger className="h-7 w-32 text-xs"><Plus className="size-3.5" /><SelectValue placeholder="Añadir nodo" /></SelectTrigger>
+                  <SelectContent>{SIISA_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                </Select>
+                <span className="hidden text-muted-foreground sm:inline">Conectar como</span>
                 <Select value={edgeKind} onValueChange={setEdgeKind}>
                   <SelectTrigger className="h-7 w-28 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>{EDGE_KINDS.map((k) => <SelectItem key={k.value} value={k.value}>{k.label}</SelectItem>)}</SelectContent>
                 </Select>
-                {selectedEdge && <Button size="sm" variant="ghost" className="h-7" onClick={() => removeEdge(selectedEdge)}><Trash2 className="size-3.5" />Conexión</Button>}
+                {selectedEdge && edgeDraft && (
+                  <>
+                    <Select value={edgeDraft.kind} onValueChange={(k) => setEdgeDraft({ ...edgeDraft, kind: k })}>
+                      <SelectTrigger className="h-7 w-28 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>{EDGE_KINDS.map((k) => <SelectItem key={k.value} value={k.value}>{k.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Input className="h-7 w-28 text-xs" placeholder="etiqueta" value={edgeDraft.label} onChange={(e) => setEdgeDraft({ ...edgeDraft, label: e.target.value })} />
+                    <Button size="sm" className="h-7" onClick={saveEdge}><Save className="size-3.5" /></Button>
+                    <Button size="sm" variant="ghost" className="h-7" onClick={() => removeEdge(selectedEdge)}><Trash2 className="size-3.5" /></Button>
+                  </>
+                )}
               </div>
             )}
             {tNodes.length === 0 ? (
               <div className="flex h-full items-center justify-center p-6 text-center text-sm text-muted-foreground">
-                Traza vacía. No se infirió ningún nodo: el grafo se arma a partir de reglas validadas.
+                Traza vacía. {editable ? "Usá «Añadir nodo» (empezá por Inicio) para modelarla." : "Todavía no tiene nodos."} No se infiere ningún nodo automáticamente.
               </div>
             ) : (
               <ReactFlow
@@ -488,7 +561,7 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
                 onNodesChange={onNodesChange}
                 onConnect={onConnect}
                 onNodeClick={(_, n) => { setSelected(n.id); setSelectedEdge(null); setFocusRule(null); }}
-                onEdgeClick={(_, e) => setSelectedEdge(e.id)}
+                onEdgeClick={(_, e) => { setSelectedEdge(e.id); const x = tEdges.find((y) => y.id === e.id); setEdgeDraft({ kind: x?.kind ?? "secundaria", label: x?.label ?? "" }); }}
                 onPaneClick={() => { setSelected(null); setSelectedEdge(null); }}
                 nodesConnectable={editable && !walk}
                 fitView
@@ -544,42 +617,13 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
                   {editable && <Button size="sm" onClick={saveWalk}><Save className="size-3.5" />Guardar propuesta</Button>}
                 </div>
               </CardContent></Card>
-            ) : sel ? (
-              <Card><CardContent className="space-y-3 p-4 text-sm">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="text-[10px] font-semibold uppercase tracking-wider text-brand">{sel.node_type}</div>
-                    <div className="font-semibold">{sel.label || "(sin nombre)"}</div>
-                    <div className="text-xs text-muted-foreground">{labelOf(IMPL_STATUSES, sel.impl_status)} {sel.version_label && `· ${sel.version_label}`}</div>
-                  </div>
-                  {editable && (
-                    <div className="flex gap-1">
-                      <Button size="icon" variant="ghost" className="size-7" onClick={() => openNode(sel)}><Pencil className="size-3.5" /></Button>
-                      <Button size="icon" variant="ghost" className="size-7" onClick={() => removeNode(sel.id)}><Trash2 className="size-3.5" /></Button>
-                    </div>
-                  )}
-                </div>
-                {!evaluable(sel) && <Badge variant="destructive">NO EVALUABLE</Badge>}
-                <div className="grid gap-2">
-                  <div className="rounded-md bg-muted p-2">
-                    <div className="text-[10px] font-semibold uppercase text-muted-foreground">Original (manual)</div>
-                    <p className="whitespace-pre-wrap text-xs">{sel.source_excerpt || selRule?.original_text || "—"}</p>
-                  </div>
-                  <div className="rounded-md border border-brand/40 p-2">
-                    <div className="text-[10px] font-semibold uppercase text-brand">Transformación SIISA (propuesta)</div>
-                    <p className="whitespace-pre-wrap text-xs">{sel.siisa_transformation || "—"}</p>
-                  </div>
-                </div>
-                <div className="text-xs"><b>Regla:</b> {selRule ? `${selRule.code} · ${labelOf(RULE_STATUSES, selRule.definition_status)}` : "—"}</div>
-                <div className="text-xs"><b>Variables:</b> {selVars.map((v: any) => v.code || v.name).join(", ") || "—"}</div>
-                <div className="text-xs"><b>Fuente:</b> {integrations.find((i) => i.id === sel.integration_id)?.name ?? (sel.data_origin || "—")}</div>
-                {sel.called_policy_id && <div className="text-xs"><b>Llama a:</b> {allPolicies.find((p) => p.id === sel.called_policy_id)?.name}</div>}
-                <div className="text-xs"><b>Duda:</b> {selQ ? `${selQ.code} — ${selQ.question}` : "—"}</div>
-                {sel.notes && <div className="text-xs text-muted-foreground">{sel.notes}</div>}
+            ) : sel && !isMobile ? (
+              <Card><CardContent className="max-h-[560px] overflow-y-auto p-4">
+                <NodeInspector node={sel} bundle={bundle} editable={editable} onSave={saveNode} onDelete={() => removeNode(sel.id)} onClose={() => setSelected(null)} lineRuleIds={new Set(lineRules.map((r) => r.id))} />
               </CardContent></Card>
             ) : (
               <Card><CardContent className="p-4 text-xs text-muted-foreground">
-                Seleccioná un nodo para ver el original del manual, su transformación a SIISA, variables, regla y dudas. Elegí una regla de la lista para resaltar sus nodos.
+                Seleccioná un nodo para ver qué recibe, qué genera, qué condición plantea y a dónde deriva. {editable ? "Usá «Añadir nodo» para empezar." : ""}
                 <div className="mt-3 text-foreground">
                   <b>{trace.name}</b> · {trace.version_label} · {labelOf(DESIGN_STATUSES, trace.design_status)}
                   {trace.notes && <p className="mt-1 text-muted-foreground">{trace.notes}</p>}
@@ -589,6 +633,36 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
           </div>
         </div>
       )}
+
+      {trace && (
+        <Card><CardContent className="p-4">
+          <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <AlertTriangle className="size-4 text-brand" /> Pendientes antes de SIISA ({issues.length})
+          </div>
+          {issues.length === 0 ? (
+            <p className="text-xs text-muted-foreground">Sin pendientes detectados en el diseño.</p>
+          ) : (
+            <ul className="space-y-1 text-xs">
+              {issues.map((x, i) => (
+                <li key={i}>
+                  <button className="text-left hover:underline" onClick={() => x.nodeId && setSelected(x.nodeId)}>
+                    <Badge variant={x.level === "pendiente" ? "destructive" : "secondary"} className="mr-1.5 text-[9px]">{x.level}</Badge>
+                    {x.text}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-2 text-[10px] text-muted-foreground">Avisos no bloqueantes. Ante indefinición se muestra pendiente; nunca se asume un valor ni un dictamen.</p>
+        </CardContent></Card>
+      )}
+
+      <Sheet open={Boolean(isMobile && sel && !walk)} onOpenChange={(o) => !o && setSelected(null)}>
+        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+          <SheetHeader><SheetTitle>{sel?.label || "Nodo"}</SheetTitle></SheetHeader>
+          {sel && <NodeInspector node={sel} bundle={bundle} editable={editable} onSave={saveNode} onDelete={() => removeNode(sel.id)} onClose={() => setSelected(null)} lineRuleIds={new Set(lineRules.map((r) => r.id))} />}
+        </SheetContent>
+      </Sheet>
 
       {/* Synced rule list */}
       <div>

@@ -57,8 +57,8 @@ export const QUESTION_STATUSES = [
 ];
 
 export const NODE_TYPES = [
-  "Inicio", "Fuente REST", "Parser", "Cálculo", "Binario", "Matriz", "Llamador",
-  "Decisión", "Comentario", "Concurrente", "otro",
+  "Inicio", "Test Binario", "Cálculo", "Decisión", "Matriz", "Llamador",
+  "Comentario", "Concurrente", "REST", "Parser",
 ].map((v) => ({ value: v, label: v }));
 
 export const IMPL_STATUSES = [
