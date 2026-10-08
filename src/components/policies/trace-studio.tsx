@@ -135,7 +135,7 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
 
   const rfEdges: Edge[] = tEdges.map((e) => {
     const walked = walk ? walk.some((id, i) => id === e.from_node_id && walk[i + 1] === e.to_node_id) : false;
-    const color = EDGE_COLORS[e.kind] ?? EDGE_COLORS["secundaria"];
+    const color: string = EDGE_COLORS[e.kind] ?? "var(--color-muted-foreground)";
     return {
       id: e.id,
       source: e.from_node_id,
@@ -320,7 +320,10 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
   function startWalk() {
     const incoming = new Set(tEdges.map((e) => e.to_node_id));
     const start = tNodes.find((n) => n.node_type === "Inicio") ?? tNodes.find((n) => !incoming.has(n.id));
-    if (!start) return toast.error("La traza no tiene nodos");
+    if (!start) {
+      toast.error("La traza no tiene nodos");
+      return;
+    }
     setWalk([start.id]);
     setSelected(start.id);
     setWalkInputs({});
@@ -336,7 +339,10 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
       notes: "Recorrido didáctico elegido por el operador. No es una decisión de crédito ni una ejecución SIISA.",
       user_email: data.user?.email ?? "",
     });
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Recorrido guardado como propuesta");
     refresh();
   }
