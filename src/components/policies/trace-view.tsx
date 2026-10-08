@@ -15,7 +15,8 @@ import { cn } from "@/lib/utils";
  */
 export function TraceView({ bundle }: { bundle: PolicyBundle }) {
   const { lines, rules, policy, integrations } = bundle;
-  const [lineId, setLineId] = useState<string | null>(lines[0]?.id ?? null);
+  const [lineId, setLineId] = useState<string | null>(null);
+  const [applicant, setApplicant] = useState({ document: "", name: "" });
   const [inputs, setInputs] = useState<Record<string, { value: string; result: TraceRuleResult }>>({});
   const line = lines.find((l) => l.id === lineId) ?? null;
   const trace = bundle.traces.find((t) => t.line_id === lineId);
@@ -43,11 +44,15 @@ export function TraceView({ bundle }: { bundle: PolicyBundle }) {
   const set = (id: string, patch: Partial<{ value: string; result: TraceRuleResult }>) =>
     setInputs((s) => ({ ...s, [id]: { value: s[id]?.value ?? "", result: s[id]?.result ?? "no evaluada", ...patch } }));
 
-  if (!lines.length) return <p className="text-sm text-muted-foreground">Esta política todavía no tiene líneas cargadas.</p>;
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => { setLineId(null); setInputs({}); }}
+          className={cn("rounded-md border px-3 py-1.5 text-sm", lineId === null ? "border-brand bg-brand/10 font-semibold" : "border-border hover:border-brand")}
+        >
+          Esquema general
+        </button>
         {lines.map((l) => (
           <button
             key={l.id}
@@ -59,6 +64,12 @@ export function TraceView({ bundle }: { bundle: PolicyBundle }) {
         ))}
       </div>
 
+      {!line && (
+        <div className="rounded-lg border border-border p-4 text-sm">
+          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Esquema general de «{policy.name}»</div>
+          <p className="mt-1">Todas las reglas cargadas de la política, en orden, para revisarla completa. Elegí una línea para ver sólo sus reglas.</p>
+        </div>
+      )}
       {line && (
         <div className="rounded-lg border border-border p-4 text-sm">
           <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Cuándo aplica «{line.name}»</div>
@@ -88,9 +99,15 @@ export function TraceView({ bundle }: { bundle: PolicyBundle }) {
             decision,
             reason: failed ? `No cumple ${failed.name}` : "",
             version,
+            applicant,
           }}
         />
         <div className="space-y-2">
+          <div className="space-y-1.5 rounded-md border border-brand p-2">
+            <div className="text-xs font-semibold">Entrada · Solicitud recibida</div>
+            <Input className="h-7 text-xs" placeholder="Nro de documento (de prueba)" value={applicant.document} onChange={(e) => setApplicant((a) => ({ ...a, document: e.target.value }))} />
+            <Input className="h-7 text-xs" placeholder="Nombre (de prueba)" value={applicant.name} onChange={(e) => setApplicant((a) => ({ ...a, name: e.target.value }))} />
+          </div>
           <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Reglas en orden de evaluación</div>
           {ordered.map((r, i) => (
             <div key={r.id} className={cn("space-y-1.5 rounded-md border border-border p-2", norm[i]?.result === "no evaluada" && inputs[r.id]?.result && "opacity-60")}>

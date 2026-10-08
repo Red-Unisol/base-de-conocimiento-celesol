@@ -306,8 +306,7 @@ export function PolicyWorkspace({ bundle, editable }: { bundle: PolicyBundle; ed
     <>
       <Tabs defaultValue="vista">
         <TabsList className="flex h-auto flex-wrap justify-start">
-          <TabsTrigger value="vista">Vista de traza</TabsTrigger>
-          <TabsTrigger value="estudio">Estudio de traza</TabsTrigger>
+          <TabsTrigger value="vista">Esquema de traza</TabsTrigger>
           <TabsTrigger value="resumen">Resumen</TabsTrigger>
           <TabsTrigger value="documentos">Documentos ({documents.length})</TabsTrigger>
           <TabsTrigger value="reglas">Reglas ({rules.length})</TabsTrigger>
@@ -319,10 +318,10 @@ export function PolicyWorkspace({ bundle, editable }: { bundle: PolicyBundle; ed
         {/* RESUMEN */}
         <TabsContent value="vista" className="mt-4">
           <TraceView bundle={bundle} />
-        </TabsContent>
-
-        <TabsContent value="estudio" className="mt-4">
-          <TraceStudio bundle={bundle} editable={editable} />
+          <details className="mt-6 rounded-lg border border-border p-3">
+            <summary className="cursor-pointer text-sm font-semibold">Editor de nodos SIISA (detalle técnico de la traza)</summary>
+            <div className="mt-3"><TraceStudio bundle={bundle} editable={editable} /></div>
+          </details>
         </TabsContent>
 
         <TabsContent value="resumen" className="mt-4">

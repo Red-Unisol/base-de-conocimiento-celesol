@@ -18,6 +18,7 @@ export type DecisionTraceData = {
   decision: "aprobado" | "rechazado" | "pendiente";
   reason: string;
   version: string;
+  applicant?: { document: string; name: string };
 };
 
 /** Corta en la primera regla que no pasa: las siguientes se muestran como no evaluadas. */
@@ -58,8 +59,11 @@ export function DecisionTrace({ data }: { data: DecisionTraceData }) {
   return (
     <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
       <div className="flex flex-col items-center">
-        <button className={cn(box, styles.ok, "font-semibold")} onClick={() => setDetail({ title: "Solicitud recibida", rows: [["Versión de la política", data.version || "—"]] })}>
-          Solicitud recibida
+        <button className={cn(box, styles.ok, "font-semibold")} onClick={() => setDetail({ title: "Solicitud recibida", rows: [["Nro de documento", data.applicant?.document || "—"], ["Nombre", data.applicant?.name || "—"], ["Versión de la política", data.version || "—"]] })}>
+          <div>Solicitud recibida</div>
+          <div className="mt-0.5 text-xs font-normal text-muted-foreground">
+            Nro de documento: {data.applicant?.document || "—"} · Nombre: {data.applicant?.name || "—"}
+          </div>
         </button>
         {rules.map((r, i) => {
           const st = r.result === "pasó" ? "ok" : r.result === "no pasó" ? "fail" : "idle";
