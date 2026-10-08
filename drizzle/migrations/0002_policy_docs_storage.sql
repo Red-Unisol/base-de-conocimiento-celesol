@@ -1,0 +1,4 @@
+CREATE POLICY "Lectura autenticada policy-docs" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'policy-docs');
+CREATE POLICY "Admins suben policy-docs" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'policy-docs' AND private.has_role(auth.uid(), 'admin'::app_role));
+CREATE POLICY "Admins editan policy-docs" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'policy-docs' AND private.has_role(auth.uid(), 'admin'::app_role));
+CREATE POLICY "Admins borran policy-docs" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'policy-docs' AND private.has_role(auth.uid(), 'admin'::app_role));
