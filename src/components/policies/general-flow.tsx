@@ -55,21 +55,28 @@ const NODES: FlowNode[] = [
 ];
 
 function NodeBox({ n, onOpen, pending }: { n: FlowNode; onOpen: () => void; pending?: boolean }) {
+  const border = pending ? "border-dashed border-muted-foreground/60" : "border-brand";
+  if (n.type === "Decisión")
+    return (
+      <button onClick={onOpen} className="group relative flex size-36 items-center justify-center" aria-label={n.title}>
+        <span className={cn("absolute inset-4 rotate-45 rounded-md border-2 bg-card group-hover:bg-muted/40", border)} />
+        <span className="relative text-center">
+          <span className="block text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{n.type}</span>
+          <span className="block px-6 text-xs font-semibold leading-tight">{n.title}</span>
+        </span>
+      </button>
+    );
   return (
     <button
       onClick={onOpen}
       className={cn(
-        "w-full max-w-sm rounded-lg border bg-card p-3 text-left transition-colors hover:bg-muted/40",
-        pending ? "border-dashed border-muted-foreground/50" : "border-brand",
+        "min-w-56 border-2 bg-card px-4 py-2.5 text-center hover:bg-muted/40",
+        n.type === "Inicio" ? "rounded-full" : "rounded-lg",
+        border,
       )}
     >
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{n.type}</div>
-      <div className="flex items-center gap-2 text-sm font-semibold">
-        <n.icon className="size-4 text-brand" /> {n.title}
-      </div>
-      {n.receives.length > 0 && <div className="mt-1 truncate text-[11px] text-muted-foreground">Recibe: {n.receives.join(", ")}</div>}
-      <div className="truncate text-[11px] text-muted-foreground">Genera: {n.generates.join(", ")}</div>
-      {pending && <div className="mt-1 text-[11px] text-destructive">Pendiente de definir</div>}
+      <div className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">{n.type}</div>
+      <div className="text-sm font-semibold">{n.title}</div>
     </button>
   );
 }
@@ -82,7 +89,7 @@ export function GeneralFlow({ policies }: { policies: PolicySummary[] }) {
     <div className="rounded-lg border border-border bg-card p-4 sm:p-6">
       <div className="mb-4">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Traza general</h2>
-        <p className="text-xs text-muted-foreground">Tocá un nodo para ver qué contiene. Es diseño: no procesa solicitudes reales.</p>
+        <p className="text-xs text-muted-foreground">Tocá un elemento para ver qué contiene. Es diseño: no procesa solicitudes reales.</p>
       </div>
 
       <div className="flex flex-col items-center">
