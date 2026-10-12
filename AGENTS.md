@@ -11,3 +11,4 @@
 - The "Políticas" module (SIISA policy design) lives in its own `policies*` tables, `policy-docs` bucket and `/politicas` + `/admin/politicas` routes, fully separate from processes/categories, so the RAG and process permissions stay untouched.
 - Policy traces are graphs (`policy_traces` → `policy_siisa_nodes`/`policy_siisa_edges`) edited with @xyflow/react; the walkthrough is manual-only and flags nodes without a CONFIRMADA, fully parameterised rule as "NO EVALUABLE", because no validated SIISA contract exists to auto-decide credit.
 - `policy_change_log` is insert-only (no UPDATE/DELETE grants) so history stays immutable.
+- Santa Fe V5 is a multi-alternative policy: one joint trace (line_id NULL) feeds four line results, rendered by `SantaFeBlueprint` instead of the linear TraceView; its data comes from the idempotent seed `scripts/seeds/santa-fe-v5.py` so it can be re-applied without duplicating or overwriting rows.
