@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import { RecordDialog, type Field } from "@/components/policies/record-dialog";
+import { SantaFeBlueprint } from "@/components/policies/santa-fe-blueprint";
 import { TraceStudio } from "@/components/policies/trace-studio";
 import { TraceView } from "@/components/policies/trace-view";
 import { Badge } from "@/components/ui/badge";
@@ -317,11 +318,17 @@ export function PolicyWorkspace({ bundle, editable }: { bundle: PolicyBundle; ed
 
         {/* RESUMEN */}
         <TabsContent value="vista" className="mt-4">
-          <TraceView bundle={bundle} />
-          <details className="mt-6 rounded-lg border border-border p-3">
-            <summary className="cursor-pointer text-sm font-semibold">Editor de nodos SIISA (detalle técnico de la traza)</summary>
-            <div className="mt-3"><TraceStudio bundle={bundle} editable={editable} /></div>
-          </details>
+          {policy.slug === "santa-fe" ? (
+            <SantaFeBlueprint bundle={bundle} editable={editable} />
+          ) : (
+            <>
+              <TraceView bundle={bundle} />
+              <details className="mt-6 rounded-lg border border-border p-3">
+                <summary className="cursor-pointer text-sm font-semibold">Editor de nodos SIISA (detalle técnico de la traza)</summary>
+                <div className="mt-3"><TraceStudio bundle={bundle} editable={editable} /></div>
+              </details>
+            </>
+          )}
         </TabsContent>
 
         <TabsContent value="resumen" className="mt-4">
