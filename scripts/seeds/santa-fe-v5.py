@@ -198,7 +198,7 @@ for i, (k, typ, label, x, y, integ, cfg) in enumerate(N):
     first_rule = (cfg.get("t", {}).get("rule_codes") or [None])[0]
     integ_sql = f"(SELECT id FROM policy_integrations WHERE code={q(integ)} LIMIT 1)" if integ else "NULL"
     rule_sql = f"(SELECT id FROM policy_rules WHERE policy_id=pid AND code={q(first_rule)} LIMIT 1)" if first_rule else "NULL"
-    S.append(f"  INSERT INTO policy_siisa_nodes (policy_id,trace_id,node_type,label,pos_x,pos_y,sort_order,impl_status,integration_id,rule_id,config_siisa,inputs,outputs,version_label,data_origin) VALUES (pid,tid,{q(typ)},{q(label)},{x},{y},{i+1},'disenado',{integ_sql},{rule_sql},{q(json.dumps(cfg, ensure_ascii=False))}::jsonb,{q(', '.join(a['name'] for a in cfg['inputs']))},{q(', '.join(a['name'] for a in cfg['outputs']))},'v0.1-diseño','blueprint Santa Fe V5') RETURNING id INTO nid;")
+    S.append(f"  INSERT INTO policy_siisa_nodes (policy_id,trace_id,node_type,label,pos_x,pos_y,sort_order,impl_status,integration_id,rule_id,config_siisa,inputs,outputs,version_label,data_origin) VALUES (pid,tid,{q(typ)},{q(label)},{x},{round(y*1.6)},{i+1},'disenado',{integ_sql},{rule_sql},{q(json.dumps(cfg, ensure_ascii=False))}::jsonb,{q(', '.join(a['name'] for a in cfg['inputs']))},{q(', '.join(a['name'] for a in cfg['outputs']))},'v0.1-diseño','blueprint Santa Fe V5') RETURNING id INTO nid;")
     S.append(f"  nodes := nodes || jsonb_build_object({q(k)}, nid);")
 for a, b, kind, label in E:
     S.append(f"  INSERT INTO policy_siisa_edges (policy_id,trace_id,from_node_id,to_node_id,kind,label) VALUES (pid,tid,(nodes->>{q(a)})::uuid,(nodes->>{q(b)})::uuid,{q(kind)},{q(label)});")
