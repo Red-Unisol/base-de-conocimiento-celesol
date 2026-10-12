@@ -13,6 +13,7 @@ import {
   applyNodeChanges,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { Maximize2, Minimize2 } from "lucide-react";
 import {
   AlertTriangle,
   CopyPlus,
@@ -83,6 +84,13 @@ export function TraceStudio({ bundle, editable, initialLineId }: { bundle: Polic
   const lineRules = rules.filter((r) => !lineId || r.line_id === lineId || !r.line_id);
 
   const [selected, setSelected] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setExpanded(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [expanded]);
   const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
   const [focusRule, setFocusRule] = useState<string | null>(null);
   const [edgeKind, setEdgeKind] = useState("verdadero");
@@ -534,7 +542,11 @@ export function TraceStudio({ bundle, editable, initialLineId }: { bundle: Polic
       {trace && (
         <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
           {/* Canvas */}
-          <div className="relative h-[60vh] min-h-[380px] overflow-hidden lg:h-[560px] rounded-lg border border-border bg-muted/20">
+          <div className={cn("overflow-hidden rounded-lg border border-border bg-muted/20", expanded ? "fixed inset-2 z-50 bg-background shadow-2xl" : "relative h-[60vh] min-h-[380px] lg:h-[560px]")}>
+            <Button size="sm" variant="secondary" className="absolute right-2 top-2 z-20 h-7 gap-1 text-xs" onClick={() => setExpanded((v) => !v)}>
+              {expanded ? <Minimize2 className="size-3.5" /> : <Maximize2 className="size-3.5" />}
+              {expanded ? "Cerrar" : "Agrandar"}
+            </Button>
             {editable && !walk && (
               <div className="absolute left-2 top-2 z-10 flex items-center gap-2 rounded-md border border-border bg-card p-1.5 text-xs shadow-sm">
                 <Select value="" onValueChange={(v) => addNode(v)}>
@@ -574,6 +586,9 @@ export function TraceStudio({ bundle, editable, initialLineId }: { bundle: Polic
                 onPaneClick={() => { setSelected(null); setSelectedEdge(null); }}
                 nodesConnectable={editable && !walk}
                 fitView
+                key={expanded ? "x" : "n"}
+                minZoom={0.1}
+                maxZoom={3}
                 proOptions={{ hideAttribution: true }}
               >
                 <Background gap={16} />
