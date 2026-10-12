@@ -205,3 +205,67 @@ export function download(name: string, content: string, mime: string) {
   a.click();
   URL.revokeObjectURL(a.href);
 }
+
+/* ---------- Blueprint completo de una política multialternativa (p. ej. Santa Fe V5) ---------- */
+export const BLUEPRINT_LEGEND =
+  "Blueprint funcional para implementación manual en SIISA; no es ejecución ni importación oficial.";
+
+const OUT_ENGINE_TAG = "FUERA DEL MOTOR";
+export const isOutOfEngine = (r: any) => r.definition_status === "NO_AUTOMATIZABLE_HOY" || String(r.block ?? "").includes(OUT_ENGINE_TAG);
+
+/** Busca en la traza un dato de config_siisa.t (disponibilidad de fuentes, pasos fuera del motor). */
+export function traceMeta(b: PolicyBundle, traceId: string, key: string): any[] {
+  for (const n of b.nodes.filter((x) => x.trace_id === traceId)) {
+    const v = getConfig(n).t[key];
+    if (Array.isArray(v) && v.length) return v;
+  }
+  return [];
+}
+
+export function exportBlueprintJson(b: PolicyBundle, traceId: string) {
+  const spec = exportSpecJson(b, traceId);
+  const rulesByQ = (qid: string) =>
+    b.questionRules.filter((x) => x.question_id === qid).map((x) => b.rules.find((r) => r.id === x.rule_id)?.code).filter(Boolean);
+  const rule = (r: any) => ({
+    codigo: r.code, bloque: r.block, ambito: r.segment, texto_original: r.original_text, entradas: r.variable,
+    operador: r.operator, umbral: r.threshold, accion: r.action_result, efecto: r.effect, fuente_logica: r.data_source,
+    excepciones: r.exceptions, estado: r.definition_status, notas: r.conditions,
+  });
+  return {
+    leyenda: BLUEPRINT_LEGEND,
+    ...spec,
+    alternativas: b.lines.map((l) => ({
+      codigo: l.code, nombre: l.name, segmento: l.segment, estado_diseno: l.design_status,
+      resultado_propuesto: { elegibilidad: "APTO|NO_APTO|REVISION|NO_EVALUABLE", motivo: null, cupo_mensual: null, monto_maximo_otorgable: null, plazo_permitido: null, cuota_estimada: null },
+      origen_cupo_por_linea: "POR CONFIRMAR",
+    })),
+    limites_de_certeza_asignacion: [
+      "Los criterios de asignación de una solicitud a cada línea no están definidos (SF-D01).",
+      "El nombre de línea de ITS y ayt_emp_id (1000 normal / 1003 sanatorio) sólo se comprobaron en el flujo posterior de firma/finalización; no son criterio de originación.",
+      "CUAD devuelve un cupo general; no se asume cupo individual por línea.",
+      "Un cupo mensual no es capital máximo; resultados por línea no acumulables automáticamente.",
+    ],
+    reglas_motor: b.rules.filter((r) => !isOutOfEngine(r)).map(rule),
+    fuera_del_motor: {
+      reglas: b.rules.filter(isOutOfEngine).map(rule),
+      pasos: traceMeta(b, traceId, "out_of_engine"),
+    },
+    preguntas_abiertas: b.questions.filter((q) => q.status !== "resuelta").map((q) => ({ codigo: q.code, pregunta: q.question, reglas: rulesByQ(q.id), respuesta: q.answer || null })),
+    contratos_integraciones_observados: traceMeta(b, traceId, "availability"),
+    mitigacion: "Falla de fuente, dato faltante, incongruencia o regla sin definir → REVISION / NO_EVALUABLE. Rechazo sólo ante condición explícita incumplida. Comité y excepciones se registran por separado. El motor no ejecuta operaciones, liquidaciones, altas/bajas ni transferencias.",
+  };
+}
+
+export function exportBlueprintMarkdown(b: PolicyBundle, traceId: string) {
+  const j = exportBlueprintJson(b, traceId);
+  const L: string[] = [`> **${BLUEPRINT_LEGEND}**`, "", exportSpecMarkdown(b, traceId), ""];
+  L.push("## Alternativas (líneas)", ...j.alternativas.map((a) => `- ${a.codigo} — ${a.nombre} (${a.segmento || "segmento por confirmar"}) · resultado: elegibilidad, motivo, cupo_mensual, monto_maximo_otorgable, plazo_permitido, cuota_estimada · origen de cupo: POR CONFIRMAR`));
+  L.push("", "## Límites de certeza de la asignación", ...j.limites_de_certeza_asignacion.map((x) => `- ${x}`));
+  const r = (x: any) => `- **${x.codigo}** [${x.estado}] ${x.bloque} · ${x.ambito}\n  - Texto: ${x.texto_original}\n  - Condición: ${x.entradas} ${x.operador || ""} ${x.umbral} → ${x.accion}\n  - Fuente: ${x.fuente_logica} · Excepciones: ${x.excepciones}\n  - ${x.efecto}`;
+  L.push("", `## Reglas del motor (${j.reglas_motor.length})`, ...j.reglas_motor.map(r));
+  L.push("", `## Fuera del motor (${j.fuera_del_motor.reglas.length} reglas de soporte operativo)`, ...j.fuera_del_motor.reglas.map(r), "", "Pasos operativos:", ...j.fuera_del_motor.pasos.map((p: string) => `- ${p}`));
+  L.push("", "## Contratos de integraciones observados", ...j.contratos_integraciones_observados.map((a: any) => `- ${a.fuente} [${a.categoria}]: ${a.detalle}`));
+  L.push("", "## Mitigación", j.mitigacion);
+  L.push("", `## Preguntas abiertas (${j.preguntas_abiertas.length})`, ...j.preguntas_abiertas.map((q) => `- ${q.codigo} (${q.reglas.join(", ")}): ${q.pregunta}`));
+  return L.join("\n");
+}
