@@ -64,7 +64,7 @@ const EDGE_COLORS: Record<string, string> = {
 
 type Dlg = { title: string; fields: Field[]; initial: any; onSubmit: (v: any) => Promise<void> } | null;
 
-export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editable: boolean }) {
+export function TraceStudio({ bundle, editable, initialLineId }: { bundle: PolicyBundle; editable: boolean; initialLineId?: string | null }) {
   const qc = useQueryClient();
   const { policy, lines, traces, rules, questions, nodes: allNodes, edges: allEdges, variables, variableLinks, integrations, allPolicies } = bundle;
   const refresh = () => {
@@ -72,7 +72,7 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
     void qc.invalidateQueries({ queryKey: ["policies"] });
   };
 
-  const [lineId, setLineId] = useState<string | null>(lines[0]?.id ?? null);
+  const [lineId, setLineId] = useState<string | null>(initialLineId !== undefined ? initialLineId : lines[0]?.id ?? null);
   const lineTraces = traces.filter((t) => (lineId ? t.line_id === lineId : !t.line_id));
   const [traceId, setTraceId] = useState<string | null>(null);
   const trace = lineTraces.find((t) => t.id === traceId) ?? lineTraces[lineTraces.length - 1] ?? null;
@@ -126,6 +126,7 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
                 <div className="space-y-0.5 text-left">
                   <div className="text-[9px] font-semibold uppercase tracking-wider text-brand">{t}</div>
                   <div className="text-xs font-semibold leading-tight">{n.label || "(sin nombre)"}</div>
+                  {c.description && <div className="line-clamp-2 text-[9px] leading-tight text-muted-foreground">{c.description}</div>}
                   {t !== "Comentario" && (
                     <>
                       <div className="text-[9px] leading-tight"><span className="text-muted-foreground">Recibe:</span> {c.inputs.map((i) => i.name).filter(Boolean).join(", ") || "—"}</div>
@@ -454,6 +455,14 @@ export function TraceStudio({ bundle, editable }: { bundle: PolicyBundle; editab
 
       {/* Lines */}
       <div className="flex flex-wrap items-center gap-2">
+        {traces.some((t) => !t.line_id) && (
+          <button
+            onClick={() => { setLineId(null); setTraceId(null); setSelected(null); setWalk(null); setCompareId(null); }}
+            className={cn("rounded-md border px-3 py-1.5 text-sm transition-colors", lineId === null ? "border-brand bg-brand/10 font-semibold" : "border-border hover:border-brand")}
+          >
+            Traza conjunta (todas las líneas)
+          </button>
+        )}
         {lines.length === 0 && <span className="text-sm text-muted-foreground">Esta política todavía no tiene líneas cargadas.</span>}
         {lines.map((l) => (
           <button
