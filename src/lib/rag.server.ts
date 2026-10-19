@@ -14,7 +14,7 @@ export class AiGatewayError extends Error {
 
 function apiKey(): string {
   const key = process.env["OPENAI_API_KEY"];
-  if (!key) throw new Error("Falta la clave del servicio de IA (OPENAI_API_KEY) en el archivo .env.");
+  if (!key) throw new Error("Falta la clave del servicio de IA (OPENAI_API_KEY) en las variables de entorno.");
   return key;
 }
 
@@ -70,8 +70,7 @@ export function normalizeText(text: string): string {
 export function chunkText(text: string, size = 1000, overlap = 150): string[] {
   const clean = normalizeText(text);
   if (!clean) return [];
-  const chunks: string[];
-  chunks = [];
+  const chunks: string[] = [];
   let start = 0;
   while (start < clean.length) {
     let end = Math.min(start + size, clean.length);
