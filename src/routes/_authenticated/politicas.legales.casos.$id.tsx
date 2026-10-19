@@ -130,7 +130,7 @@ function Files({ caseId }: { caseId: string }) {
   const refresh = () => qc.invalidateQueries({ queryKey: ["legal-case-files", caseId] });
 
   async function upload() {
-    if (!files.length) return toast.error("Elegí al menos un archivo.");
+    if (!files.length) { toast.error("Elegí al menos un archivo."); return; }
     setBusy(true);
     let ok = 0;
     for (const f of files) {
