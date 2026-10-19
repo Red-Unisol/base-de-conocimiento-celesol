@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Scale, Search } from "lucide-react";
+import { ArrowRight, Gavel, Scale, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AppLayout } from "@/components/app-layout";
@@ -51,6 +51,9 @@ function PoliciesPage() {
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             Repositorio de políticas de originación y diseño de trazas SIISA.
           </p>
+          <Link to="/politicas/legales" className="mt-4 inline-flex items-center gap-2 rounded-md border border-brand px-3 py-2 text-sm font-medium text-brand hover:bg-secondary">
+            <Gavel className="size-4" /> Legales · Defensa del Consumidor <ArrowRight className="size-4" />
+          </Link>
         </div>
       </section>
 
