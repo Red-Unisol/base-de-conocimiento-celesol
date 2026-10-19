@@ -1,8 +1,8 @@
 /** Helpers de servidor para la búsqueda semántica (RAG). No importar desde el cliente. */
 
-const GATEWAY = "https://ai.gateway.lovable.dev/v1";
-const EMBEDDING_MODEL = "openai/text-embedding-3-small";
-const CHAT_MODEL = "google/gemini-3.7-flash";
+const GATEWAY = "https://api.openai.com/v1";
+const EMBEDDING_MODEL = "text-embedding-3-small";
+const CHAT_MODEL = "gpt-4o";
 
 export class AiGatewayError extends Error {
   status: number;
@@ -13,20 +13,20 @@ export class AiGatewayError extends Error {
 }
 
 function apiKey(): string {
-  const key = process.env["LOVABLE_API_KEY"];
-  if (!key) throw new Error("Falta la clave del servicio de IA (LOVABLE_API_KEY).");
+  const key = process.env["OPENAI_API_KEY"];
+  if (!key) throw new Error("Falta la clave del servicio de IA (OPENAI_API_KEY) en el archivo .env.");
   return key;
 }
 
 function friendly(status: number, raw: string): AiGatewayError {
-  if (status === 429) {
-    return new AiGatewayError(status, "El servicio de IA está saturado. Probá de nuevo en un minuto.");
+  if (status === 401) {
+    return new AiGatewayError(status, "La clave de API de OpenAI (OPENAI_API_KEY) no es válida.");
   }
-  if (status === 402) {
-    return new AiGatewayError(status, "Se agotaron los créditos de IA del proyecto. Recargalos para seguir usando la búsqueda inteligente.");
+  if (status === 429) {
+    return new AiGatewayError(status, "El servicio de IA está saturado o sin saldo en OpenAI. Probá de nuevo en un minuto.");
   }
   if (status === 403) {
-    return new AiGatewayError(status, "El uso de IA está bloqueado por la configuración del espacio de trabajo.");
+    return new AiGatewayError(status, "El uso de IA está bloqueado por permisos de la cuenta de OpenAI.");
   }
   return new AiGatewayError(status, `El servicio de IA devolvió un error (${status}). ${raw.slice(0, 200)}`);
 }
@@ -36,8 +36,7 @@ async function gateway(path: string, body: unknown): Promise<unknown> {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Lovable-API-Key": apiKey(),
-      "X-Lovable-AIG-SDK": "fetch",
+      Authorization: `Bearer ${apiKey()}`,
     },
     body: JSON.stringify(body),
   });
@@ -71,7 +70,8 @@ export function normalizeText(text: string): string {
 export function chunkText(text: string, size = 1000, overlap = 150): string[] {
   const clean = normalizeText(text);
   if (!clean) return [];
-  const chunks: string[] = [];
+  const chunks: string[];
+  chunks = [];
   let start = 0;
   while (start < clean.length) {
     let end = Math.min(start + size, clean.length);
