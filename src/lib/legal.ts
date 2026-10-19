@@ -68,7 +68,7 @@ export async function fetchCaseFiles(caseId: string) {
 export async function uploadCaseFile(caseId: string, file: File, meta: { title: string; kind: string; notes: string }) {
   const safe = file.name.replace(/[^\w.\-]+/g, "_");
   const path = `${caseId}/${crypto.randomUUID()}-${safe}`;
-  const up = await supabase.storage.from(LEGAL_BUCKET).upload(path, file, { contentType: file.type || undefined });
+  const up = await supabase.storage.from(LEGAL_BUCKET).upload(path, file, file.type ? { contentType: file.type } : undefined);
   if (up.error) throw up.error;
   const { error } = await supabase.from("legal_case_files").insert({
     case_id: caseId,

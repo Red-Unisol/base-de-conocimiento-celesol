@@ -32,10 +32,11 @@ export function CaseForm({ initial, onSubmit }: { initial?: LegalCase; onSubmit:
       className="grid gap-3 sm:grid-cols-2"
       onSubmit={async (e) => {
         e.preventDefault();
-        if (!v.name.trim()) return toast.error("El nombre del caso es obligatorio.");
+        const name = (v["name"] ?? "").trim();
+        if (!name) { toast.error("El nombre del caso es obligatorio."); return; }
         setBusy(true);
         try {
-          await onSubmit({ ...v, name: v.name.trim(), received_on: v.received_on || null } as LegalCaseInput);
+          await onSubmit({ ...v, name, received_on: v["received_on"] || null } as LegalCaseInput);
         } catch (err) {
           toast.error(`No se pudo guardar: ${(err as Error).message}`);
         } finally {
