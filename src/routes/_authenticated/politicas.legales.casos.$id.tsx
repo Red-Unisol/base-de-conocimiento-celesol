@@ -220,7 +220,6 @@ function Files({ caseId }: { caseId: string }) {
                         >Quitar</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
-                  </AlertDialogContent>
                   </AlertDialog>
                 </div>
               ))}
