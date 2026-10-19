@@ -85,6 +85,143 @@ export type Database = {
         }
         Relationships: []
       }
+      legal_case_files: {
+        Row: {
+          case_id: string
+          created_at: string
+          id: string
+          kind: string
+          mime_type: string
+          notes: string
+          original_name: string
+          size_bytes: number
+          storage_path: string
+          title: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          id?: string
+          kind?: string
+          mime_type?: string
+          notes?: string
+          original_name: string
+          size_bytes?: number
+          storage_path: string
+          title?: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          mime_type?: string
+          notes?: string
+          original_name?: string
+          size_bytes?: number
+          storage_path?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legal_case_files_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "legal_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      legal_cases: {
+        Row: {
+          bitrix_ref: string
+          created_at: string
+          created_by: string | null
+          deadlines: string
+          entity: string
+          file_number: string
+          id: string
+          manager: string
+          member_id: string
+          member_name: string
+          name: string
+          notes: string
+          received_on: string | null
+          sender: string
+          updated_at: string
+        }
+        Insert: {
+          bitrix_ref?: string
+          created_at?: string
+          created_by?: string | null
+          deadlines?: string
+          entity?: string
+          file_number?: string
+          id?: string
+          manager?: string
+          member_id?: string
+          member_name?: string
+          name: string
+          notes?: string
+          received_on?: string | null
+          sender?: string
+          updated_at?: string
+        }
+        Update: {
+          bitrix_ref?: string
+          created_at?: string
+          created_by?: string | null
+          deadlines?: string
+          entity?: string
+          file_number?: string
+          id?: string
+          manager?: string
+          member_id?: string
+          member_name?: string
+          name?: string
+          notes?: string
+          received_on?: string | null
+          sender?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      legal_documents: {
+        Row: {
+          body: string
+          created_at: string
+          defined_by: string
+          defined_on: string | null
+          id: string
+          slug: string
+          source_ref: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          defined_by?: string
+          defined_on?: string | null
+          id?: string
+          slug: string
+          source_ref?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          defined_by?: string
+          defined_on?: string | null
+          id?: string
+          slug?: string
+          source_ref?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       policies: {
         Row: {
           code: string
