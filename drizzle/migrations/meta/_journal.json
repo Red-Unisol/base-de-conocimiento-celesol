@@ -36,6 +36,13 @@
       "when": 1791464022751,
       "tag": "0004_siisa_node_config",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792410223831,
+      "tag": "0005_legales_defensa_consumidor",
+      "breakpoints": true
     }
   ]
 }

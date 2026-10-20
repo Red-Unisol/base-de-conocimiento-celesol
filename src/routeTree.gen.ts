@@ -21,6 +21,8 @@ import { Route as AuthenticatedPoliticasIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedPoliticasSlugRouteImport } from './routes/_authenticated/politicas.$slug'
 import { Route as AuthenticatedProcesoSlugRouteImport } from './routes/_authenticated/proceso.$slug'
 import { Route as AuthenticatedAdminProcesoIdRouteImport } from './routes/_authenticated/admin.proceso.$id'
+import { Route as AuthenticatedPoliticasLegalesIndexRouteImport } from './routes/_authenticated/politicas.legales.index'
+import { Route as AuthenticatedPoliticasLegalesCasosIdRouteImport } from './routes/_authenticated/politicas.legales.casos.$id'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -88,6 +90,18 @@ const AuthenticatedAdminProcesoIdRoute =
     path: '/admin/proceso/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPoliticasLegalesIndexRoute =
+  AuthenticatedPoliticasLegalesIndexRouteImport.update({
+    id: '/politicas/legales/',
+    path: '/politicas/legales/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPoliticasLegalesCasosIdRoute =
+  AuthenticatedPoliticasLegalesCasosIdRouteImport.update({
+    id: '/politicas/legales/casos/$id',
+    path: '/politicas/legales/casos/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -101,6 +115,8 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/politicas/': typeof AuthenticatedPoliticasIndexRoute
   '/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
+  '/politicas/legales/': typeof AuthenticatedPoliticasLegalesIndexRoute
+  '/politicas/legales/casos/$id': typeof AuthenticatedPoliticasLegalesCasosIdRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -114,6 +130,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/politicas': typeof AuthenticatedPoliticasIndexRoute
   '/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
+  '/politicas/legales': typeof AuthenticatedPoliticasLegalesIndexRoute
+  '/politicas/legales/casos/$id': typeof AuthenticatedPoliticasLegalesCasosIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -129,6 +147,8 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/politicas/': typeof AuthenticatedPoliticasIndexRoute
   '/_authenticated/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
+  '/_authenticated/politicas/legales/': typeof AuthenticatedPoliticasLegalesIndexRoute
+  '/_authenticated/politicas/legales/casos/$id': typeof AuthenticatedPoliticasLegalesCasosIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -144,6 +164,8 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/politicas/'
     | '/admin/proceso/$id'
+    | '/politicas/legales/'
+    | '/politicas/legales/casos/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -157,6 +179,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/politicas'
     | '/admin/proceso/$id'
+    | '/politicas/legales'
+    | '/politicas/legales/casos/$id'
   id:
     | '__root__'
     | '/_authenticated'
@@ -171,6 +195,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/politicas/'
     | '/_authenticated/admin/proceso/$id'
+    | '/_authenticated/politicas/legales/'
+    | '/_authenticated/politicas/legales/casos/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -265,6 +291,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminProcesoIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/politicas/legales/': {
+      id: '/_authenticated/politicas/legales/'
+      path: '/politicas/legales'
+      fullPath: '/politicas/legales/'
+      preLoaderRoute: typeof AuthenticatedPoliticasLegalesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/politicas/legales/casos/$id': {
+      id: '/_authenticated/politicas/legales/casos/$id'
+      path: '/politicas/legales/casos/$id'
+      fullPath: '/politicas/legales/casos/$id'
+      preLoaderRoute: typeof AuthenticatedPoliticasLegalesCasosIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -278,6 +318,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedPoliticasIndexRoute: typeof AuthenticatedPoliticasIndexRoute
   AuthenticatedAdminProcesoIdRoute: typeof AuthenticatedAdminProcesoIdRoute
+  AuthenticatedPoliticasLegalesIndexRoute: typeof AuthenticatedPoliticasLegalesIndexRoute
+  AuthenticatedPoliticasLegalesCasosIdRoute: typeof AuthenticatedPoliticasLegalesCasosIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -290,6 +332,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedPoliticasIndexRoute: AuthenticatedPoliticasIndexRoute,
   AuthenticatedAdminProcesoIdRoute: AuthenticatedAdminProcesoIdRoute,
+  AuthenticatedPoliticasLegalesIndexRoute:
+    AuthenticatedPoliticasLegalesIndexRoute,
+  AuthenticatedPoliticasLegalesCasosIdRoute:
+    AuthenticatedPoliticasLegalesCasosIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

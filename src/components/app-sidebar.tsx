@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BookOpen, Home, Scale, Upload, Users } from "lucide-react";
+import { BookOpen, Gavel, Home, Scale, Upload, Users } from "lucide-react";
 
 import {
   Sidebar,
@@ -61,10 +61,18 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas")} tooltip="Políticas">
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas") && !pathname.startsWith("/politicas/legales")} tooltip="Políticas">
                   <Link to="/politicas">
                     <Scale />
                     <span>Políticas</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas/legales")} tooltip="Legales">
+                  <Link to="/politicas/legales">
+                    <Gavel />
+                    <span>Legales</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
