@@ -33,3 +33,5 @@ dist-ssr
 
 # Respaldos de base de datos (contienen datos privados)
 backups/
+
+.env
