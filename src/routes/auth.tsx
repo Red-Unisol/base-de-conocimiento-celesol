@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { BookOpen, Eye, EyeOff, Loader2, LogIn, MailCheck } from "lucide-react";
+import { Eye, EyeOff, Loader2, LogIn, MailCheck } from "lucide-react";
+import unisolIcon from "@/assets/unisol-icon.png.asset.json";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -88,9 +89,7 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex items-center justify-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <BookOpen className="size-4" />
-          </span>
+          <img src={unisolIcon.url} alt="UNISOL" className="size-9 rounded-full" />
           <span className="flex flex-col leading-tight">
             <span className="text-sm font-bold tracking-tight">UNISOL</span>
             <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">

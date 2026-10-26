@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BookOpen, Gavel, Home, Scale, Upload, Users } from "lucide-react";
+import { Gavel, Home, Scale, Upload, Users } from "lucide-react";
+import unisolIcon from "@/assets/unisol-icon.png.asset.json";
 
 import {
   Sidebar,
@@ -28,9 +29,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <Link to="/" className="flex items-center gap-2.5 px-2 py-2.5">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <BookOpen className="size-4" />
-          </span>
+          <img src={unisolIcon.url} alt="UNISOL" className="size-8 shrink-0 rounded-full" />
           <span className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
             <span className="text-sm font-bold tracking-tight">UNISOL</span>
             <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
