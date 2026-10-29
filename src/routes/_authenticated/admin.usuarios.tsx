@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertCircle, Loader2, Search, Trash2, Users } from "lucide-react";
+import { AlertCircle, Loader2, Search, Trash2, UserPlus, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -9,9 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useIsAdmin, useSession, type AppRole } from "@/hooks/use-auth";
-import { deleteRegisteredUser } from "@/lib/users.functions";
+import { INSTITUTIONAL_DOMAINS, isInstitutionalEmail } from "@/lib/institutional-domains";
+import { createInstitutionalUser, deleteRegisteredUser } from "@/lib/users.functions";
 import {
   MANAGED_ROLES,
   fetchRegisteredUsers,
@@ -77,6 +79,74 @@ function UsersPage() {
   );
 }
 
+function CreateUserCard() {
+  const qc = useQueryClient();
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const create = useMutation({
+    mutationFn: async () => createInstitutionalUser({ data: { email, password, fullName } }),
+    onSuccess: () => {
+      toast.success("Cuenta creada", {
+        description: `${email.trim().toLowerCase()} ya puede ingresar con la contraseña inicial.`,
+      });
+      setEmail("");
+      setFullName("");
+      setPassword("");
+      qc.invalidateQueries({ queryKey: ["registered-users"] });
+    },
+    onError: (e: Error) => toast.error("No pudimos crear la cuenta", { description: e.message }),
+  });
+  const domainOk = !email.includes("@") || isInstitutionalEmail(email);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <UserPlus className="size-4 text-brand" />
+          Alta directa de cuenta institucional
+        </CardTitle>
+        <CardDescription>
+          Sólo para correos @{INSTITUTIONAL_DOMAINS.join(", @")}. La cuenta queda activa al instante,
+          sin enviar correo. Los correos personales (Gmail, Outlook…) se registran solos desde la
+          pantalla de ingreso.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form
+          className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto] sm:items-end"
+          onSubmit={(e) => {
+            e.preventDefault();
+            create.mutate();
+          }}
+        >
+          <div className="space-y-1.5">
+            <Label htmlFor="new-email">Correo</Label>
+            <Input id="new-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nombre@redunisol.com.ar" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="new-name">Nombre (opcional)</Label>
+            <Input id="new-name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="new-pass">Contraseña inicial</Label>
+            <Input id="new-pass" type="text" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mínimo 8 caracteres" />
+          </div>
+          <Button type="submit" disabled={create.isPending || !domainOk}>
+            {create.isPending ? <Loader2 className="size-4 animate-spin" /> : <UserPlus className="size-4" />}
+            Crear cuenta
+          </Button>
+        </form>
+        {!domainOk && (
+          <p className="mt-2 text-xs text-destructive">
+            Este correo no es institucional: esa persona debe registrarse desde la pantalla de ingreso.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function UsersPanel() {
   const qc = useQueryClient();
   const { user } = useSession();
@@ -124,6 +194,8 @@ function UsersPanel() {
         </div>
         <Badge variant="secondary">{(users.data ?? []).length} cuentas</Badge>
       </header>
+
+      <CreateUserCard />
 
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
