@@ -51,7 +51,7 @@ export const createInstitutionalUser = createServerFn({ method: "POST" })
       email: data.email,
       password: data.password,
       email_confirm: true,
-      user_metadata: data.fullName ? { full_name: data.fullName } : undefined,
+      user_metadata: { full_name: data.fullName },
     });
     if (cErr) {
       if (/already|registered|exists/i.test(cErr.message))
