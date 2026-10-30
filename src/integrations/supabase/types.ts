@@ -222,6 +222,36 @@ export type Database = {
         }
         Relationships: []
       }
+      password_reset_requests: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          resolved_at: string | null
+          resolved_by: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       policies: {
         Row: {
           code: string
