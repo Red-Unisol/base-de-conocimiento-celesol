@@ -142,6 +142,7 @@ export function AppSidebar() {
                 <Link to="/admin/usuarios">
                   <Users />
                   <span>Usuarios</span>
+                  <PendingResetBadge />
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -150,5 +151,25 @@ export function AppSidebar() {
       )}
 
     </Sidebar>
+  );
+}
+
+function PendingResetBadge() {
+  const { data } = useQuery({
+    queryKey: ["reset-requests-count"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("password_reset_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pendiente");
+      return count ?? 0;
+    },
+    refetchInterval: 60_000,
+  });
+  if (!data) return null;
+  return (
+    <span className="ml-auto rounded-full bg-destructive px-1.5 text-[10px] font-semibold text-destructive-foreground">
+      {data}
+    </span>
   );
 }

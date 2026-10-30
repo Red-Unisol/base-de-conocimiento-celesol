@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { useIsAdmin, useSession, type AppRole } from "@/hooks/use-auth";
 import { INSTITUTIONAL_DOMAINS, isInstitutionalEmail } from "@/lib/institutional-domains";
 import { createInstitutionalUser, deleteRegisteredUser } from "@/lib/users.functions";
+import { ResetRequestsCard } from "@/components/reset-requests-card";
 import {
   MANAGED_ROLES,
   fetchRegisteredUsers,
@@ -74,6 +75,9 @@ function UsersPage() {
 
   return (
     <AppLayout>
+      <div className="mx-auto max-w-5xl px-6 pt-8">
+        <ResetRequestsCard />
+      </div>
       <UsersPanel />
     </AppLayout>
   );
