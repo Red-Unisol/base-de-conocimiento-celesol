@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useIsAdmin } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 import { categoryIcon, fetchCategories } from "@/lib/kb";
 
 export function AppSidebar() {
