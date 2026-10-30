@@ -1,0 +1,2 @@
+- [x] Pedido de restablecimiento de contraseña con aviso al admin
+- [x] Admin cambia contraseña desde panel Usuarios

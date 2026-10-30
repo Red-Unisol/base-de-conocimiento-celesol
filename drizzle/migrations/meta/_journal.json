@@ -43,6 +43,13 @@
       "when": 1792410223831,
       "tag": "0005_legales_defensa_consumidor",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793368037557,
+      "tag": "0006_password_reset_requests",
+      "breakpoints": true
     }
   ]
 }

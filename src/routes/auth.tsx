@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSession } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { requestPasswordReset } from "@/lib/users.functions";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const { user, loading } = useSession();
-  const [mode, setMode] = useState<"password" | "link">("password");
+  const [mode, setMode] = useState<"password" | "link" | "reset">("password");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -85,6 +86,21 @@ function AuthPage() {
     });
   }
 
+  async function sendReset(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await requestPasswordReset({ data: { email } });
+      setSent(true);
+    } catch (err) {
+      toast.error("No pudimos enviar el pedido", {
+        description: err instanceof Error ? err.message : undefined,
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-sm">
@@ -101,12 +117,14 @@ function AuthPage() {
         <Card className="shadow-institutional">
           <CardHeader>
             <CardTitle className="text-lg">
-              {mode === "password" ? "Acceso interno" : "Primer ingreso"}
+              {mode === "password" ? "Acceso interno" : mode === "reset" ? "Restablecer contraseña" : "Primer ingreso"}
             </CardTitle>
             <CardDescription>
               {mode === "password"
                 ? "Ingresá con tu correo y contraseña."
-                : "Te enviamos un enlace de acceso por correo. Al abrirlo vas a poder elegir tu contraseña."}
+                : mode === "reset"
+                  ? "Avisamos al administrador para que te asigne una contraseña nueva."
+                  : "Te enviamos un enlace de acceso por correo. Al abrirlo vas a poder elegir tu contraseña."}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -158,7 +176,48 @@ function AuthPage() {
                     setSent(false);
                   }}
                 >
-                  ¿Primera vez o no recordás la contraseña? Pedí un enlace de acceso
+                  ¿Primera vez? Pedí un enlace de acceso
+                </button>
+                <button
+                  type="button"
+                  className="w-full text-center text-xs font-medium text-brand transition-opacity hover:opacity-80"
+                  onClick={() => {
+                    setMode("reset");
+                    setSent(false);
+                  }}
+                >
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </form>
+            ) : mode === "reset" ? (
+              <form className="space-y-4" onSubmit={sendReset}>
+                <div className="space-y-2">
+                  <Label htmlFor="reset-email">Correo electrónico</Label>
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                {sent && (
+                  <p className="rounded-md bg-muted p-3 text-xs text-muted-foreground">
+                    Tu pedido fue enviado al administrador. Te va a contactar con una contraseña
+                    nueva.
+                  </p>
+                )}
+                <Button type="submit" className="w-full" disabled={busy || sent}>
+                  {busy ? <Loader2 className="size-4 animate-spin" /> : <MailCheck className="size-4" />}
+                  Pedir restablecimiento
+                </Button>
+                <button
+                  type="button"
+                  className="w-full text-center text-xs font-medium text-brand transition-opacity hover:opacity-80"
+                  onClick={() => setMode("password")}
+                >
+                  Volver al ingreso con contraseña
                 </button>
               </form>
             ) : (

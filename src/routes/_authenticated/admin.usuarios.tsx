@@ -14,6 +14,8 @@ import { Switch } from "@/components/ui/switch";
 import { useIsAdmin, useSession, type AppRole } from "@/hooks/use-auth";
 import { INSTITUTIONAL_DOMAINS, isInstitutionalEmail } from "@/lib/institutional-domains";
 import { createInstitutionalUser, deleteRegisteredUser } from "@/lib/users.functions";
+import { SetPasswordButton } from "@/components/set-password-button";
+import { ResetRequestsCard } from "@/components/reset-requests-card";
 import {
   MANAGED_ROLES,
   fetchRegisteredUsers,
@@ -74,6 +76,9 @@ function UsersPage() {
 
   return (
     <AppLayout>
+      <div className="mx-auto max-w-5xl px-6 pt-8">
+        <ResetRequestsCard />
+      </div>
       <UsersPanel />
     </AppLayout>
   );
@@ -267,6 +272,8 @@ function UserRow({
               {user.last_seen_at ? ` · Último ingreso: ${formatDate(user.last_seen_at)}` : ""}
             </CardDescription>
           </div>
+          <div className="flex items-center gap-1">
+          <SetPasswordButton userId={user.id} email={user.email} />
           <Button
             variant="ghost"
             size="sm"
@@ -277,6 +284,7 @@ function UserRow({
             <Trash2 className="size-4" />
             Dar de baja
           </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-6">
