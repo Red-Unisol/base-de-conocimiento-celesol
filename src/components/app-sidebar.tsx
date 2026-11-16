@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Gavel, Home, Scale, Upload, Users } from "lucide-react";
+import { Gavel, Home, Scale, Upload, Users, Bot } from "lucide-react";
 import unisolIcon from "@/assets/unisol-icon.png.asset.json";
 
 import {
@@ -52,6 +52,7 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem><SidebarMenuButton asChild isActive={pathname === "/aportes"} tooltip="Aportes de asistentes"><Link to="/aportes"><Bot /><span>Aportes de asistentes</span></Link></SidebarMenuButton></SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

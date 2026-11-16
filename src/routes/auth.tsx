@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Eye, EyeOff, Loader2, LogIn, MailCheck } from "lucide-react";
 import unisolIcon from "@/assets/unisol-icon.png.asset.json";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ import { oauthReturnPath } from "@/lib/oauth-return-path";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
-  validateSearch: (s: Record<string, unknown>) => ({ next: oauthReturnPath(s['next']) }),
+  validateSearch: (s: Record<string, unknown>): { next?: string } => ({ next: oauthReturnPath(s['next']) }),
   head: () => ({
     meta: [
       { title: "Ingresar — Base de Conocimiento UNISOL" },
@@ -34,8 +34,8 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const navigate = useNavigate();
-  const { next } = Route.useSearch();
+  const { next: returnTo } = Route.useSearch();
+  const next = returnTo ?? "/";
   const { user, loading } = useSession();
   const [mode, setMode] = useState<"password" | "link" | "reset">("password");
   const [email, setEmail] = useState("");

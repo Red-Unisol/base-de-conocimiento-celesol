@@ -30,7 +30,7 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
     return data;
   },
   pendingComponent: () => <main className="p-8">Cargando autorización…</main>,
-  errorComponent: ({ error }) => <main className="mx-auto max-w-lg space-y-4 p-8"><h1 className="text-xl font-semibold">No pudimos autorizar el asistente</h1><p role="alert">{error.message}</p><Button onClick={() => window.location.assign("/")}>Volver al inicio</Button></main>,
+  errorComponent: ({ error }) => <main className="mx-auto max-w-lg space-y-4 p-8"><h1 className="text-xl font-semibold">No pudimos autorizar el asistente</h1><p role="alert">{error instanceof Error ? error.message : "La autorización no está disponible."}</p><Button onClick={() => window.location.assign("/")}>Volver al inicio</Button></main>,
   component: Consent,
 });
 function Consent() {
