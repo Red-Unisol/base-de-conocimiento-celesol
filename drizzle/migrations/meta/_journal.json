@@ -50,6 +50,13 @@
       "when": 1793368037557,
       "tag": "0006_password_reset_requests",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794835325671,
+      "tag": "0007_agent_contributions",
+      "breakpoints": true
     }
   ]
 }

@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_contributions: {
+        Row: {
+          content_markdown: string
+          created_at: string
+          created_by: string
+          id: string
+          kind: string
+          policy_id: string | null
+          process_id: string | null
+          review_notes: string
+          source_notes: string
+          status: string
+          title: string
+        }
+        Insert: {
+          content_markdown: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          kind: string
+          policy_id?: string | null
+          process_id?: string | null
+          review_notes?: string
+          source_notes?: string
+          status?: string
+          title: string
+        }
+        Update: {
+          content_markdown?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          kind?: string
+          policy_id?: string | null
+          process_id?: string | null
+          review_notes?: string
+          source_notes?: string
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_contributions_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_contributions_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "processes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attachments: {
         Row: {
           created_at: string
