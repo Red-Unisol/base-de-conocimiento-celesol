@@ -1,0 +1,1 @@
+CREATE POLICY "Admin remove contribution recordings" ON storage.objects FOR DELETE TO authenticated USING (bucket_id='agent-recordings' AND private.has_role(auth.uid(),'admin'));

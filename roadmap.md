@@ -1,6 +1,7 @@
 - [x] Pedido de restablecimiento de contraseña con aviso al admin
 - [x] Admin cambia contraseña desde panel Usuarios
-- [ ] Conexión privada MCP con lectura permitida y propuestas revisables
-- [ ] Pantalla de aportes y herramientas de navegador
-- [ ] Grabaciones privadas como evidencia y pasos documentados
-- [ ] Verificación de permisos, ingreso y catálogo MCP
+- [x] Conexión privada MCP con lectura permitida y propuestas revisables
+- [x] Pantalla de aportes y herramientas de navegador
+- [x] Grabaciones privadas como evidencia y pasos documentados
+- [x] Pruebas de ingreso, guardado, lectura de grabación y rechazo MCP sin autorización
+- [ ] Conexión completa desde Claude/ChatGPT: requiere republicación y autorización desde el cliente externo
