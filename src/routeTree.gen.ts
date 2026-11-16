@@ -15,6 +15,7 @@ import { Route as DefinirClaveRouteImport } from './routes/definir-clave'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAportesRouteImport } from './routes/_authenticated/aportes'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminPoliticasRouteImport } from './routes/_authenticated/admin.politicas'
@@ -55,6 +56,11 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAportesRoute = AuthenticatedAportesRouteImport.update({
+  id: '/aportes',
+  path: '/aportes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/definir-clave': typeof DefinirClaveRoute
   '/mcp': typeof McpRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/aportes': typeof AuthenticatedAportesRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/definir-clave': typeof DefinirClaveRoute
   '/mcp': typeof McpRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/aportes': typeof AuthenticatedAportesRoute
   '/': typeof AuthenticatedIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/definir-clave': typeof DefinirClaveRoute
   '/mcp': typeof McpRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/_authenticated/aportes': typeof AuthenticatedAportesRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/definir-clave'
     | '/mcp'
     | '/.well-known/oauth-protected-resource'
+    | '/aportes'
     | '/.lovable/oauth/consent'
     | '/admin/politicas'
     | '/admin/usuarios'
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/definir-clave'
     | '/mcp'
     | '/.well-known/oauth-protected-resource'
+    | '/aportes'
     | '/'
     | '/.lovable/oauth/consent'
     | '/admin/politicas'
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
     | '/definir-clave'
     | '/mcp'
     | '/.well-known/oauth-protected-resource'
+    | '/_authenticated/aportes'
     | '/_authenticated/'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/politicas'
@@ -287,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/aportes': {
+      id: '/_authenticated/aportes'
+      path: '/aportes'
+      fullPath: '/aportes'
+      preLoaderRoute: typeof AuthenticatedAportesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/.lovable/oauth/consent': {
@@ -370,6 +389,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAportesRoute: typeof AuthenticatedAportesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedAdminPoliticasRoute: typeof AuthenticatedAdminPoliticasRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
@@ -384,6 +404,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAportesRoute: AuthenticatedAportesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedAdminPoliticasRoute: AuthenticatedAdminPoliticasRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
