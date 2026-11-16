@@ -1,0 +1,1 @@
+ALTER POLICY "Read allowed contribution recording" ON storage.objects USING (bucket_id='agent-recordings' AND EXISTS (SELECT 1 FROM public.agent_recordings r JOIN public.agent_contributions c ON c.id=r.contribution_id WHERE r.path=storage.objects.name AND (c.created_by=auth.uid() OR private.has_role(auth.uid(),'admin'))));

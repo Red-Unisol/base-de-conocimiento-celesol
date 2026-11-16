@@ -64,6 +64,13 @@
       "when": 1794835428110,
       "tag": "0008_agent_recordings",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794836052581,
+      "tag": "0009_recording_path_policy",
+      "breakpoints": true
     }
   ]
 }
