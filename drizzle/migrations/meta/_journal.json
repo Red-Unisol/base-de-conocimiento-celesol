@@ -71,6 +71,13 @@
       "when": 1794836052581,
       "tag": "0009_recording_path_policy",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794836116945,
+      "tag": "0010_agent_recordings_admin_cleanup",
+      "breakpoints": true
     }
   ]
 }
