@@ -11,9 +11,11 @@ import { Label } from "@/components/ui/label";
 import { useSession } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { requestPasswordReset } from "@/lib/users.functions";
+import { oauthReturnPath } from "@/lib/oauth-return-path";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
+  validateSearch: (s: Record<string, unknown>) => ({ next: oauthReturnPath(s['next']) }),
   head: () => ({
     meta: [
       { title: "Ingresar — Base de Conocimiento UNISOL" },
@@ -33,6 +35,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const { user, loading } = useSession();
   const [mode, setMode] = useState<"password" | "link" | "reset">("password");
   const [email, setEmail] = useState("");
@@ -42,8 +45,8 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: "/" });
-  }, [loading, user, navigate]);
+    if (!loading && user) window.location.assign(next);
+  }, [loading, user, next]);
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
@@ -59,7 +62,7 @@ function AuthPage() {
       });
       return;
     }
-    navigate({ to: "/" });
+    window.location.assign(next);
   }
 
   async function sendLink(e?: React.FormEvent) {
@@ -71,7 +74,7 @@ function AuthPage() {
       email: clean,
       options: {
         shouldCreateUser: true,
-        emailRedirectTo: `${window.location.origin}/definir-clave`,
+        emailRedirectTo: new URL(`/definir-clave?next=${encodeURIComponent(next)}`, window.location.origin).href,
       },
     });
     setBusy(false);

@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DefinirClaveRouteImport } from './routes/definir-clave'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminPoliticasRouteImport } from './routes/_authenticated/admin.politicas'
@@ -38,6 +40,17 @@ const DefinirClaveRoute = DefinirClaveRouteImport.update({
   path: '/definir-clave',
   getParentRoute: () => rootRouteImport,
 } as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -107,6 +120,8 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/definir-clave': typeof DefinirClaveRoute
+  '/mcp': typeof McpRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
@@ -121,6 +136,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/definir-clave': typeof DefinirClaveRoute
+  '/mcp': typeof McpRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/': typeof AuthenticatedIndexRoute
   '/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
@@ -138,6 +155,8 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/definir-clave': typeof DefinirClaveRoute
+  '/mcp': typeof McpRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
@@ -156,6 +175,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/definir-clave'
+    | '/mcp'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/politicas'
     | '/admin/usuarios'
     | '/categoria/$slug'
@@ -170,6 +191,8 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/definir-clave'
+    | '/mcp'
+    | '/.well-known/oauth-protected-resource'
     | '/'
     | '/admin/politicas'
     | '/admin/usuarios'
@@ -186,6 +209,8 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/definir-clave'
+    | '/mcp'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/'
     | '/_authenticated/admin/politicas'
     | '/_authenticated/admin/usuarios'
@@ -203,6 +228,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   DefinirClaveRoute: typeof DefinirClaveRoute
+  McpRoute: typeof McpRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -226,6 +253,20 @@ declare module '@tanstack/react-router' {
       path: '/definir-clave'
       fullPath: '/definir-clave'
       preLoaderRoute: typeof DefinirClaveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -345,6 +386,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   DefinirClaveRoute: DefinirClaveRoute,
+  McpRoute: McpRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
