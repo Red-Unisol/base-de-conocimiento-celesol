@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "sdk_version": "3.5.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://nazukhyczgkcgkupagyq.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "base-de-conocimiento-celesol",
+      "version": "0.1.0",
+      "title": "Base de Conocimiento Celesol"
+    },
+    "tools": [
+      {
+        "name": "list_content",
+        "title": "Buscar políticas y procedimientos",
+        "description": "Busca contenido permitido por título; devuelve identificadores para leerlo o proponer cambios.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "policy",
+                "process"
+              ]
+            },
+            "query": {
+              "type": "string",
+              "maxLength": 200,
+              "default": ""
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "read_content",
+        "title": "Leer política o procedimiento",
+        "description": "Lee un contenido permitido. Las políticas son diseños manuales, no decisiones crediticias ejecutables; no confirmar reglas ni inventar condiciones.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "policy",
+                "process"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "kind",
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "submit_contribution",
+        "title": "Guardar propuesta para revisión",
+        "description": "Guarda una propuesta o corrección con pasos numerados y fuentes. No modifica contenido vigente ni valida reglas; videos largos se procesan fuera de esta llamada y se aporta su transcripción.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "policy",
+                "process"
+              ]
+            },
+            "target_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "content_markdown": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100000
+            },
+            "source_notes": {
+              "type": "string",
+              "maxLength": 10000,
+              "default": ""
+            }
+          },
+          "required": [
+            "kind",
+            "title",
+            "content_markdown"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_contributions",
+        "title": "Ver aportes guardados",
+        "description": "Consulta aportes visibles: propios para colaboradores, todos para administradores.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

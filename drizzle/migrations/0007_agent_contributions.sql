@@ -1,0 +1,9 @@
+CREATE TABLE public.agent_contributions (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), created_by uuid NOT NULL DEFAULT auth.uid(), kind text NOT NULL CHECK (kind IN ('policy','process')), policy_id uuid REFERENCES public.policies(id), process_id uuid REFERENCES public.processes(id), title text NOT NULL CHECK (length(title) BETWEEN 1 AND 200), content_markdown text NOT NULL CHECK (length(content_markdown) BETWEEN 1 AND 100000), source_notes text NOT NULL DEFAULT '', status text NOT NULL DEFAULT 'pendiente' CHECK (status IN ('pendiente','revisada')), review_notes text NOT NULL DEFAULT '', created_at timestamptz NOT NULL DEFAULT now(), CHECK ((kind='policy' AND process_id IS NULL) OR (kind='process' AND policy_id IS NULL)));
+GRANT SELECT, INSERT ON public.agent_contributions TO authenticated;
+GRANT UPDATE (status, review_notes) ON public.agent_contributions TO authenticated;
+GRANT ALL ON public.agent_contributions TO service_role;
+ALTER TABLE public.agent_contributions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Own contributions or admin" ON public.agent_contributions FOR SELECT TO authenticated USING (created_by=auth.uid() OR private.has_role(auth.uid(),'admin'));
+CREATE POLICY "Submit own accessible contribution" ON public.agent_contributions FOR INSERT TO authenticated WITH CHECK (created_by=auth.uid() AND status='pendiente' AND review_notes='' AND (policy_id IS NULL OR EXISTS (SELECT 1 FROM public.policies p WHERE p.id=policy_id)) AND (process_id IS NULL OR EXISTS (SELECT 1 FROM public.processes p WHERE p.id=process_id)));
+CREATE POLICY "Admin review only" ON public.agent_contributions FOR UPDATE TO authenticated USING (private.has_role(auth.uid(),'admin')) WITH CHECK (private.has_role(auth.uid(),'admin'));
+CREATE INDEX agent_contributions_owner ON public.agent_contributions(created_by,created_at DESC);

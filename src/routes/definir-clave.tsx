@@ -9,9 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSession } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { oauthReturnPath } from "@/lib/oauth-return-path";
 
 export const Route = createFileRoute("/definir-clave")({
   ssr: false,
+  validateSearch: (s: Record<string, unknown>) => ({ next: oauthReturnPath(s['next']) }),
   head: () => ({
     meta: [
       { title: "Definí tu contraseña — Base de Conocimiento UNISOL" },
@@ -31,6 +33,7 @@ export const Route = createFileRoute("/definir-clave")({
 });
 
 function SetPasswordPage() {
+  const { next } = Route.useSearch();
   const navigate = useNavigate();
   const { user, loading } = useSession();
   const [password, setPassword] = useState("");
@@ -55,7 +58,7 @@ function SetPasswordPage() {
       return;
     }
     toast.success("Listo", { description: "Ya podés ingresar con tu correo y contraseña." });
-    navigate({ to: "/" });
+    window.location.assign(next);
   }
 
   return (
@@ -120,7 +123,7 @@ function SetPasswordPage() {
                 </Button>
               </form>
             ) : (
-              <Button className="w-full" onClick={() => navigate({ to: "/auth" })}>
+              <Button className="w-full" onClick={() => navigate({ to: "/auth", search: { next } })}>
                 Ir al ingreso
               </Button>
             )}

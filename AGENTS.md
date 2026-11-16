@@ -13,3 +13,4 @@
 - `policy_change_log` is insert-only (no UPDATE/DELETE grants) so history stays immutable.
 - Santa Fe V5 is a multi-alternative policy: one joint trace (line_id NULL) feeds four line results, rendered by `SantaFeBlueprint` instead of the linear TraceView; its data comes from the idempotent seed `scripts/seeds/santa-fe-v5.py` so it can be re-applied without duplicating or overwriting rows.
 - Legales (Defensa del Consumidor) lives in `legal_documents`, `legal_cases`, `legal_case_files` and the private `legal-cases` bucket under `/politicas/legales`; case data and files are admin-only (RLS + storage) because they hold members personal data, while procedures are readable by any signed-in user. Files are stored at `<case_id>/<uuid>-<name>` so names never collide.
+- Agent integrations use OAuth-verified caller-scoped clients; agent contributions remain separate reviewable proposals and never replace policy rules, traces, or published procedures automatically.

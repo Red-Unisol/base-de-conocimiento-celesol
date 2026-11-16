@@ -1,0 +1,8 @@
+CREATE TABLE public.agent_recordings (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), contribution_id uuid NOT NULL REFERENCES public.agent_contributions(id), name text NOT NULL, path text NOT NULL UNIQUE, size_bytes bigint NOT NULL CHECK(size_bytes>0), created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, INSERT ON public.agent_recordings TO authenticated;
+GRANT ALL ON public.agent_recordings TO service_role;
+ALTER TABLE public.agent_recordings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Visible contribution files" ON public.agent_recordings FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM public.agent_contributions c WHERE c.id=contribution_id));
+CREATE POLICY "Own contribution uploads" ON public.agent_recordings FOR INSERT TO authenticated WITH CHECK (EXISTS (SELECT 1 FROM public.agent_contributions c WHERE c.id=contribution_id AND c.created_by=auth.uid()) AND path LIKE auth.uid()::text || '/' || contribution_id::text || '/%');
+CREATE POLICY "Upload own contribution recording" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id='agent-recordings' AND (storage.foldername(name))[1]=auth.uid()::text AND EXISTS (SELECT 1 FROM public.agent_contributions c WHERE c.id::text=(storage.foldername(name))[2] AND c.created_by=auth.uid()));
+CREATE POLICY "Read allowed contribution recording" ON storage.objects FOR SELECT TO authenticated USING (bucket_id='agent-recordings' AND EXISTS (SELECT 1 FROM public.agent_recordings r JOIN public.agent_contributions c ON c.id=r.contribution_id WHERE r.path=name AND (c.created_by=auth.uid() OR private.has_role(auth.uid(),'admin'))));

@@ -1,2 +1,6 @@
 - [x] Pedido de restablecimiento de contraseña con aviso al admin
 - [x] Admin cambia contraseña desde panel Usuarios
+- [ ] Conexión privada MCP con lectura permitida y propuestas revisables
+- [ ] Pantalla de aportes y herramientas de navegador
+- [ ] Grabaciones privadas como evidencia y pasos documentados
+- [ ] Verificación de permisos, ingreso y catálogo MCP
