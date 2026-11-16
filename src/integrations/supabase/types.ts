@@ -71,6 +71,41 @@ export type Database = {
           },
         ]
       }
+      agent_recordings: {
+        Row: {
+          contribution_id: string
+          created_at: string
+          id: string
+          name: string
+          path: string
+          size_bytes: number
+        }
+        Insert: {
+          contribution_id: string
+          created_at?: string
+          id?: string
+          name: string
+          path: string
+          size_bytes: number
+        }
+        Update: {
+          contribution_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          path?: string
+          size_bytes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_recordings_contribution_id_fkey"
+            columns: ["contribution_id"]
+            isOneToOne: false
+            referencedRelation: "agent_contributions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attachments: {
         Row: {
           created_at: string
