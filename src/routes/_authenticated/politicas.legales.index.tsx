@@ -42,7 +42,7 @@ function LegalesPage() {
           <span className="mt-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand">
             <Gavel className="size-3.5" /> Políticas · Legales
           </span>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight">Legales</h1>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight">Políticas de legales</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             Procedimientos escritos y carpetas internas de casos. No envía correos ni crea tareas externas.
           </p>

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Gavel, Home, Scale, Upload, Users, Bot } from "lucide-react";
+import { Gavel, Home, Scale, Upload, Users, Bot, FileText } from "lucide-react";
 import unisolIcon from "@/assets/unisol-icon.png.asset.json";
 
 import {
@@ -58,23 +58,28 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Motor de políticas</SidebarGroupLabel>
+          <SidebarGroupLabel>Políticas</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas") && !pathname.startsWith("/politicas/legales")} tooltip="Políticas">
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas") && !pathname.startsWith("/politicas/legales") && !pathname.startsWith("/politicas/cancelacion")} tooltip="Políticas de riesgo">
                   <Link to="/politicas">
                     <Scale />
-                    <span>Políticas</span>
+                    <span>Políticas de riesgo</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas/legales")} tooltip="Legales">
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas/legales")} tooltip="Políticas de legales">
                   <Link to="/politicas/legales">
                     <Gavel />
-                    <span>Legales</span>
+                    <span>Políticas de legales</span>
                   </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas/cancelacion")} tooltip="Políticas de cancelación">
+                  <Link to="/politicas/cancelacion"><FileText /><span>Políticas de cancelación</span></Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -82,7 +87,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Categorías de procesos</SidebarGroupLabel>
+          <SidebarGroupLabel>Procesos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {(categories.data ?? []).map((cat) => {

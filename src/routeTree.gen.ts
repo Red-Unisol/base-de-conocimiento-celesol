@@ -23,6 +23,7 @@ import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authen
 import { Route as AuthenticatedCategoriaSlugRouteImport } from './routes/_authenticated/categoria.$slug'
 import { Route as AuthenticatedPoliticasIndexRouteImport } from './routes/_authenticated/politicas.index'
 import { Route as AuthenticatedPoliticasSlugRouteImport } from './routes/_authenticated/politicas.$slug'
+import { Route as AuthenticatedPoliticasCancelacionRouteImport } from './routes/_authenticated/politicas.cancelacion'
 import { Route as AuthenticatedProcesoSlugRouteImport } from './routes/_authenticated/proceso.$slug'
 import { Route as AuthenticatedAdminProcesoIdRouteImport } from './routes/_authenticated/admin.proceso.$id'
 import { Route as AuthenticatedPoliticasLegalesIndexRouteImport } from './routes/_authenticated/politicas.legales.index'
@@ -103,6 +104,12 @@ const AuthenticatedPoliticasSlugRoute =
     path: '/politicas/$slug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPoliticasCancelacionRoute =
+  AuthenticatedPoliticasCancelacionRouteImport.update({
+    id: '/politicas/cancelacion',
+    path: '/politicas/cancelacion',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProcesoSlugRoute =
   AuthenticatedProcesoSlugRouteImport.update({
     id: '/proceso/$slug',
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/politicas/$slug': typeof AuthenticatedPoliticasSlugRoute
+  '/politicas/cancelacion': typeof AuthenticatedPoliticasCancelacionRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/politicas/': typeof AuthenticatedPoliticasIndexRoute
@@ -159,6 +167,7 @@ export interface FileRoutesByTo {
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/politicas/$slug': typeof AuthenticatedPoliticasSlugRoute
+  '/politicas/cancelacion': typeof AuthenticatedPoliticasCancelacionRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/politicas': typeof AuthenticatedPoliticasIndexRoute
@@ -180,6 +189,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/_authenticated/politicas/$slug': typeof AuthenticatedPoliticasSlugRoute
+  '/_authenticated/politicas/cancelacion': typeof AuthenticatedPoliticasCancelacionRoute
   '/_authenticated/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/politicas/': typeof AuthenticatedPoliticasIndexRoute
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/categoria/$slug'
     | '/politicas/$slug'
+    | '/politicas/cancelacion'
     | '/proceso/$slug'
     | '/admin/'
     | '/politicas/'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/categoria/$slug'
     | '/politicas/$slug'
+    | '/politicas/cancelacion'
     | '/proceso/$slug'
     | '/admin'
     | '/politicas'
@@ -240,6 +252,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/categoria/$slug'
     | '/_authenticated/politicas/$slug'
+    | '/_authenticated/politicas/cancelacion'
     | '/_authenticated/proceso/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/politicas/'
@@ -357,6 +370,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPoliticasSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/politicas/cancelacion': {
+      id: '/_authenticated/politicas/cancelacion'
+      path: '/politicas/cancelacion'
+      fullPath: '/politicas/cancelacion'
+      preLoaderRoute: typeof AuthenticatedPoliticasCancelacionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/proceso/$slug': {
       id: '/_authenticated/proceso/$slug'
       path: '/proceso/$slug'
@@ -395,6 +415,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedCategoriaSlugRoute: typeof AuthenticatedCategoriaSlugRoute
   AuthenticatedPoliticasSlugRoute: typeof AuthenticatedPoliticasSlugRoute
+  AuthenticatedPoliticasCancelacionRoute: typeof AuthenticatedPoliticasCancelacionRoute
   AuthenticatedProcesoSlugRoute: typeof AuthenticatedProcesoSlugRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedPoliticasIndexRoute: typeof AuthenticatedPoliticasIndexRoute
@@ -410,6 +431,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedCategoriaSlugRoute: AuthenticatedCategoriaSlugRoute,
   AuthenticatedPoliticasSlugRoute: AuthenticatedPoliticasSlugRoute,
+  AuthenticatedPoliticasCancelacionRoute:
+    AuthenticatedPoliticasCancelacionRoute,
   AuthenticatedProcesoSlugRoute: AuthenticatedProcesoSlugRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedPoliticasIndexRoute: AuthenticatedPoliticasIndexRoute,

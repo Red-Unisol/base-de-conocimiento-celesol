@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Gavel, Scale, Search } from "lucide-react";
+import { ArrowRight, FileText, Gavel, Scale, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AppLayout } from "@/components/app-layout";
@@ -45,20 +45,23 @@ function PoliciesPage() {
       <section className="border-b border-border bg-card px-6 py-10">
         <div className="mx-auto max-w-6xl">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand">
-            <Scale className="size-3.5" /> Motor de políticas
+            <Scale className="size-3.5" /> Políticas
           </span>
           <h1 className="mt-2 text-3xl font-bold tracking-tight">Políticas</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Repositorio de políticas de originación y diseño de trazas SIISA.
+            Riesgo · Legales · Cancelación
           </p>
-          <Link to="/politicas/legales" className="mt-4 inline-flex items-center gap-2 rounded-md border border-brand px-3 py-2 text-sm font-medium text-brand hover:bg-secondary">
-            <Gavel className="size-4" /> Legales · Defensa del Consumidor <ArrowRight className="size-4" />
-          </Link>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <Link to="/politicas" hash="riesgo" className="flex items-center gap-2 rounded-lg border border-border p-4 font-medium hover:bg-secondary"><Scale className="size-5 text-brand" /> Políticas de riesgo <ArrowRight className="ml-auto size-4" /></Link>
+            <Link to="/politicas/legales" className="flex items-center gap-2 rounded-lg border border-border p-4 font-medium hover:bg-secondary"><Gavel className="size-5 text-brand" /> Políticas de legales <ArrowRight className="ml-auto size-4" /></Link>
+            <Link to="/politicas/cancelacion" className="flex items-center gap-2 rounded-lg border border-border p-4 font-medium hover:bg-secondary"><FileText className="size-5 text-brand" /> Políticas de cancelación <ArrowRight className="ml-auto size-4" /></Link>
+          </div>
         </div>
       </section>
 
-      <section className="px-6 py-8">
+      <section id="riesgo" className="px-6 py-8">
         <div className="mx-auto max-w-6xl space-y-6">
+          <h2 className="text-xl font-bold">Políticas de riesgo</h2>
           {q.data && <GeneralFlow policies={q.data} />}
           <div className="flex flex-wrap gap-3">
             <div className="relative min-w-60 flex-1">

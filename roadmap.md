@@ -5,3 +5,4 @@
 - [x] Grabaciones privadas como evidencia y pasos documentados
 - [x] Pruebas de ingreso, guardado, lectura de grabación y rechazo MCP sin autorización
 - [ ] Conexión completa desde Claude/ChatGPT: requiere republicación y autorización desde el cliente externo
+- [x] Organizar navegación de Políticas y trasladar el instructivo de cancelación fuera de Procesos; verificar contenido y pantalla.
