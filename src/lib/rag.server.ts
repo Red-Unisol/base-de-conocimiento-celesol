@@ -2,7 +2,7 @@
 
 const GATEWAY = "https://api.openai.com/v1";
 const EMBEDDING_MODEL = "text-embedding-3-small";
-const CHAT_MODEL = "gpt-4o";
+const CHAT_MODEL = "gpt-6-luna";
 
 export class AiGatewayError extends Error {
   status: number;
