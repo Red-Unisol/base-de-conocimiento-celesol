@@ -24,6 +24,7 @@ import { Route as AuthenticatedCategoriaSlugRouteImport } from './routes/_authen
 import { Route as AuthenticatedPoliticasIndexRouteImport } from './routes/_authenticated/politicas.index'
 import { Route as AuthenticatedPoliticasSlugRouteImport } from './routes/_authenticated/politicas.$slug'
 import { Route as AuthenticatedPoliticasCancelacionRouteImport } from './routes/_authenticated/politicas.cancelacion'
+import { Route as AuthenticatedPoliticasCelesolRouteImport } from './routes/_authenticated/politicas.celesol'
 import { Route as AuthenticatedProcesoSlugRouteImport } from './routes/_authenticated/proceso.$slug'
 import { Route as AuthenticatedAdminProcesoIdRouteImport } from './routes/_authenticated/admin.proceso.$id'
 import { Route as AuthenticatedPoliticasLegalesIndexRouteImport } from './routes/_authenticated/politicas.legales.index'
@@ -110,6 +111,12 @@ const AuthenticatedPoliticasCancelacionRoute =
     path: '/politicas/cancelacion',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPoliticasCelesolRoute =
+  AuthenticatedPoliticasCelesolRouteImport.update({
+    id: '/politicas/celesol',
+    path: '/politicas/celesol',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProcesoSlugRoute =
   AuthenticatedProcesoSlugRouteImport.update({
     id: '/proceso/$slug',
@@ -148,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/politicas/$slug': typeof AuthenticatedPoliticasSlugRoute
   '/politicas/cancelacion': typeof AuthenticatedPoliticasCancelacionRoute
+  '/politicas/celesol': typeof AuthenticatedPoliticasCelesolRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/politicas/': typeof AuthenticatedPoliticasIndexRoute
@@ -168,6 +176,7 @@ export interface FileRoutesByTo {
   '/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/politicas/$slug': typeof AuthenticatedPoliticasSlugRoute
   '/politicas/cancelacion': typeof AuthenticatedPoliticasCancelacionRoute
+  '/politicas/celesol': typeof AuthenticatedPoliticasCelesolRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/politicas': typeof AuthenticatedPoliticasIndexRoute
@@ -190,6 +199,7 @@ export interface FileRoutesById {
   '/_authenticated/categoria/$slug': typeof AuthenticatedCategoriaSlugRoute
   '/_authenticated/politicas/$slug': typeof AuthenticatedPoliticasSlugRoute
   '/_authenticated/politicas/cancelacion': typeof AuthenticatedPoliticasCancelacionRoute
+  '/_authenticated/politicas/celesol': typeof AuthenticatedPoliticasCelesolRoute
   '/_authenticated/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/politicas/': typeof AuthenticatedPoliticasIndexRoute
@@ -212,6 +222,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/politicas/$slug'
     | '/politicas/cancelacion'
+    | '/politicas/celesol'
     | '/proceso/$slug'
     | '/admin/'
     | '/politicas/'
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/politicas/$slug'
     | '/politicas/cancelacion'
+    | '/politicas/celesol'
     | '/proceso/$slug'
     | '/admin'
     | '/politicas'
@@ -253,6 +265,7 @@ export interface FileRouteTypes {
     | '/_authenticated/categoria/$slug'
     | '/_authenticated/politicas/$slug'
     | '/_authenticated/politicas/cancelacion'
+    | '/_authenticated/politicas/celesol'
     | '/_authenticated/proceso/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/politicas/'
@@ -377,6 +390,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPoliticasCancelacionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/politicas/celesol': {
+      id: '/_authenticated/politicas/celesol'
+      path: '/politicas/celesol'
+      fullPath: '/politicas/celesol'
+      preLoaderRoute: typeof AuthenticatedPoliticasCelesolRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/proceso/$slug': {
       id: '/_authenticated/proceso/$slug'
       path: '/proceso/$slug'
@@ -416,6 +436,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCategoriaSlugRoute: typeof AuthenticatedCategoriaSlugRoute
   AuthenticatedPoliticasSlugRoute: typeof AuthenticatedPoliticasSlugRoute
   AuthenticatedPoliticasCancelacionRoute: typeof AuthenticatedPoliticasCancelacionRoute
+  AuthenticatedPoliticasCelesolRoute: typeof AuthenticatedPoliticasCelesolRoute
   AuthenticatedProcesoSlugRoute: typeof AuthenticatedProcesoSlugRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedPoliticasIndexRoute: typeof AuthenticatedPoliticasIndexRoute
@@ -433,6 +454,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPoliticasSlugRoute: AuthenticatedPoliticasSlugRoute,
   AuthenticatedPoliticasCancelacionRoute:
     AuthenticatedPoliticasCancelacionRoute,
+  AuthenticatedPoliticasCelesolRoute: AuthenticatedPoliticasCelesolRoute,
   AuthenticatedProcesoSlugRoute: AuthenticatedProcesoSlugRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedPoliticasIndexRoute: AuthenticatedPoliticasIndexRoute,
