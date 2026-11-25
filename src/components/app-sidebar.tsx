@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Building2, Gavel, Home, Scale, Upload, Users, Bot, FileText } from "lucide-react";
+import { Boxes, Map as MapIcon, Gavel, Home, Scale, Upload, Users, Bot, FileText } from "lucide-react";
 import unisolIcon from "@/assets/unisol-icon.png.asset.json";
 
 import {
@@ -53,6 +53,7 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem><SidebarMenuButton asChild isActive={pathname === "/aportes"} tooltip="Aportes de asistentes"><Link to="/aportes"><Bot /><span>Aportes de asistentes</span></Link></SidebarMenuButton></SidebarMenuItem>
+              <SidebarMenuItem><SidebarMenuButton asChild isActive={pathname === "/mapa-celesol"} tooltip="Mapa Mutual Celesol"><Link to="/mapa-celesol"><MapIcon /><span>Mapa Mutual Celesol</span></Link></SidebarMenuButton></SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -62,7 +63,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas") && !pathname.startsWith("/politicas/legales") && !pathname.startsWith("/politicas/cancelacion") && !pathname.startsWith("/politicas/celesol")} tooltip="Políticas de riesgo">
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas") && !pathname.startsWith("/politicas/legales") && !pathname.startsWith("/politicas/cancelacion")} tooltip="Políticas de riesgo">
                   <Link to="/politicas">
                     <Scale />
                     <span>Políticas de riesgo</span>
@@ -82,11 +83,15 @@ export function AppSidebar() {
                   <Link to="/politicas/cancelacion"><FileText /><span>Políticas de cancelación</span></Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith("/politicas/celesol")} tooltip="Mutual Celesol">
-                  <Link to="/politicas/celesol" search={{}}><Building2 /><span>Mutual Celesol</span></Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Varios</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem><SidebarMenuButton asChild isActive={pathname.startsWith("/varios")} tooltip="Varios"><Link to="/varios"><Boxes /><span>Proveedores y fondeadores</span></Link></SidebarMenuButton></SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

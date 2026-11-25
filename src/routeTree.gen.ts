@@ -16,6 +16,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAportesRouteImport } from './routes/_authenticated/aportes'
+import { Route as AuthenticatedMapaCelesolRouteImport } from './routes/_authenticated/mapa-celesol'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminPoliticasRouteImport } from './routes/_authenticated/admin.politicas'
@@ -26,6 +27,8 @@ import { Route as AuthenticatedPoliticasSlugRouteImport } from './routes/_authen
 import { Route as AuthenticatedPoliticasCancelacionRouteImport } from './routes/_authenticated/politicas.cancelacion'
 import { Route as AuthenticatedPoliticasCelesolRouteImport } from './routes/_authenticated/politicas.celesol'
 import { Route as AuthenticatedProcesoSlugRouteImport } from './routes/_authenticated/proceso.$slug'
+import { Route as AuthenticatedVariosIndexRouteImport } from './routes/_authenticated/varios.index'
+import { Route as AuthenticatedVariosFichaRouteImport } from './routes/_authenticated/varios.$ficha'
 import { Route as AuthenticatedAdminProcesoIdRouteImport } from './routes/_authenticated/admin.proceso.$id'
 import { Route as AuthenticatedPoliticasLegalesIndexRouteImport } from './routes/_authenticated/politicas.legales.index'
 import { Route as AuthenticatedPoliticasLegalesCasosIdRouteImport } from './routes/_authenticated/politicas.legales.casos.$id'
@@ -65,6 +68,12 @@ const AuthenticatedAportesRoute = AuthenticatedAportesRouteImport.update({
   path: '/aportes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMapaCelesolRoute =
+  AuthenticatedMapaCelesolRouteImport.update({
+    id: '/mapa-celesol',
+    path: '/mapa-celesol',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
@@ -123,6 +132,18 @@ const AuthenticatedProcesoSlugRoute =
     path: '/proceso/$slug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedVariosIndexRoute =
+  AuthenticatedVariosIndexRouteImport.update({
+    id: '/varios/',
+    path: '/varios/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVariosFichaRoute =
+  AuthenticatedVariosFichaRouteImport.update({
+    id: '/varios/$ficha',
+    path: '/varios/$ficha',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminProcesoIdRoute =
   AuthenticatedAdminProcesoIdRouteImport.update({
     id: '/admin/proceso/$id',
@@ -149,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/aportes': typeof AuthenticatedAportesRoute
+  '/mapa-celesol': typeof AuthenticatedMapaCelesolRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
@@ -157,8 +179,10 @@ export interface FileRoutesByFullPath {
   '/politicas/cancelacion': typeof AuthenticatedPoliticasCancelacionRoute
   '/politicas/celesol': typeof AuthenticatedPoliticasCelesolRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
+  '/varios/$ficha': typeof AuthenticatedVariosFichaRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/politicas/': typeof AuthenticatedPoliticasIndexRoute
+  '/varios/': typeof AuthenticatedVariosIndexRoute
   '/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
   '/politicas/legales/': typeof AuthenticatedPoliticasLegalesIndexRoute
   '/politicas/legales/casos/$id': typeof AuthenticatedPoliticasLegalesCasosIdRoute
@@ -169,6 +193,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/aportes': typeof AuthenticatedAportesRoute
+  '/mapa-celesol': typeof AuthenticatedMapaCelesolRoute
   '/': typeof AuthenticatedIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
@@ -178,8 +203,10 @@ export interface FileRoutesByTo {
   '/politicas/cancelacion': typeof AuthenticatedPoliticasCancelacionRoute
   '/politicas/celesol': typeof AuthenticatedPoliticasCelesolRoute
   '/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
+  '/varios/$ficha': typeof AuthenticatedVariosFichaRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/politicas': typeof AuthenticatedPoliticasIndexRoute
+  '/varios': typeof AuthenticatedVariosIndexRoute
   '/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
   '/politicas/legales': typeof AuthenticatedPoliticasLegalesIndexRoute
   '/politicas/legales/casos/$id': typeof AuthenticatedPoliticasLegalesCasosIdRoute
@@ -192,6 +219,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/aportes': typeof AuthenticatedAportesRoute
+  '/_authenticated/mapa-celesol': typeof AuthenticatedMapaCelesolRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/politicas': typeof AuthenticatedAdminPoliticasRoute
@@ -201,8 +229,10 @@ export interface FileRoutesById {
   '/_authenticated/politicas/cancelacion': typeof AuthenticatedPoliticasCancelacionRoute
   '/_authenticated/politicas/celesol': typeof AuthenticatedPoliticasCelesolRoute
   '/_authenticated/proceso/$slug': typeof AuthenticatedProcesoSlugRoute
+  '/_authenticated/varios/$ficha': typeof AuthenticatedVariosFichaRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/politicas/': typeof AuthenticatedPoliticasIndexRoute
+  '/_authenticated/varios/': typeof AuthenticatedVariosIndexRoute
   '/_authenticated/admin/proceso/$id': typeof AuthenticatedAdminProcesoIdRoute
   '/_authenticated/politicas/legales/': typeof AuthenticatedPoliticasLegalesIndexRoute
   '/_authenticated/politicas/legales/casos/$id': typeof AuthenticatedPoliticasLegalesCasosIdRoute
@@ -216,6 +246,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/.well-known/oauth-protected-resource'
     | '/aportes'
+    | '/mapa-celesol'
     | '/.lovable/oauth/consent'
     | '/admin/politicas'
     | '/admin/usuarios'
@@ -224,8 +255,10 @@ export interface FileRouteTypes {
     | '/politicas/cancelacion'
     | '/politicas/celesol'
     | '/proceso/$slug'
+    | '/varios/$ficha'
     | '/admin/'
     | '/politicas/'
+    | '/varios/'
     | '/admin/proceso/$id'
     | '/politicas/legales/'
     | '/politicas/legales/casos/$id'
@@ -236,6 +269,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/.well-known/oauth-protected-resource'
     | '/aportes'
+    | '/mapa-celesol'
     | '/'
     | '/.lovable/oauth/consent'
     | '/admin/politicas'
@@ -245,8 +279,10 @@ export interface FileRouteTypes {
     | '/politicas/cancelacion'
     | '/politicas/celesol'
     | '/proceso/$slug'
+    | '/varios/$ficha'
     | '/admin'
     | '/politicas'
+    | '/varios'
     | '/admin/proceso/$id'
     | '/politicas/legales'
     | '/politicas/legales/casos/$id'
@@ -258,6 +294,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/aportes'
+    | '/_authenticated/mapa-celesol'
     | '/_authenticated/'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/politicas'
@@ -267,8 +304,10 @@ export interface FileRouteTypes {
     | '/_authenticated/politicas/cancelacion'
     | '/_authenticated/politicas/celesol'
     | '/_authenticated/proceso/$slug'
+    | '/_authenticated/varios/$ficha'
     | '/_authenticated/admin/'
     | '/_authenticated/politicas/'
+    | '/_authenticated/varios/'
     | '/_authenticated/admin/proceso/$id'
     | '/_authenticated/politicas/legales/'
     | '/_authenticated/politicas/legales/casos/$id'
@@ -332,6 +371,13 @@ declare module '@tanstack/react-router' {
       path: '/aportes'
       fullPath: '/aportes'
       preLoaderRoute: typeof AuthenticatedAportesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mapa-celesol': {
+      id: '/_authenticated/mapa-celesol'
+      path: '/mapa-celesol'
+      fullPath: '/mapa-celesol'
+      preLoaderRoute: typeof AuthenticatedMapaCelesolRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/.lovable/oauth/consent': {
@@ -404,6 +450,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProcesoSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/varios/': {
+      id: '/_authenticated/varios/'
+      path: '/varios'
+      fullPath: '/varios/'
+      preLoaderRoute: typeof AuthenticatedVariosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/varios/$ficha': {
+      id: '/_authenticated/varios/$ficha'
+      path: '/varios/$ficha'
+      fullPath: '/varios/$ficha'
+      preLoaderRoute: typeof AuthenticatedVariosFichaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/proceso/$id': {
       id: '/_authenticated/admin/proceso/$id'
       path: '/admin/proceso/$id'
@@ -430,6 +490,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAportesRoute: typeof AuthenticatedAportesRoute
+  AuthenticatedMapaCelesolRoute: typeof AuthenticatedMapaCelesolRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedAdminPoliticasRoute: typeof AuthenticatedAdminPoliticasRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
@@ -438,8 +499,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPoliticasCancelacionRoute: typeof AuthenticatedPoliticasCancelacionRoute
   AuthenticatedPoliticasCelesolRoute: typeof AuthenticatedPoliticasCelesolRoute
   AuthenticatedProcesoSlugRoute: typeof AuthenticatedProcesoSlugRoute
+  AuthenticatedVariosFichaRoute: typeof AuthenticatedVariosFichaRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedPoliticasIndexRoute: typeof AuthenticatedPoliticasIndexRoute
+  AuthenticatedVariosIndexRoute: typeof AuthenticatedVariosIndexRoute
   AuthenticatedAdminProcesoIdRoute: typeof AuthenticatedAdminProcesoIdRoute
   AuthenticatedPoliticasLegalesIndexRoute: typeof AuthenticatedPoliticasLegalesIndexRoute
   AuthenticatedPoliticasLegalesCasosIdRoute: typeof AuthenticatedPoliticasLegalesCasosIdRoute
@@ -447,6 +510,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAportesRoute: AuthenticatedAportesRoute,
+  AuthenticatedMapaCelesolRoute: AuthenticatedMapaCelesolRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedAdminPoliticasRoute: AuthenticatedAdminPoliticasRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
@@ -456,8 +520,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedPoliticasCancelacionRoute,
   AuthenticatedPoliticasCelesolRoute: AuthenticatedPoliticasCelesolRoute,
   AuthenticatedProcesoSlugRoute: AuthenticatedProcesoSlugRoute,
+  AuthenticatedVariosFichaRoute: AuthenticatedVariosFichaRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedPoliticasIndexRoute: AuthenticatedPoliticasIndexRoute,
+  AuthenticatedVariosIndexRoute: AuthenticatedVariosIndexRoute,
   AuthenticatedAdminProcesoIdRoute: AuthenticatedAdminProcesoIdRoute,
   AuthenticatedPoliticasLegalesIndexRoute:
     AuthenticatedPoliticasLegalesIndexRoute,

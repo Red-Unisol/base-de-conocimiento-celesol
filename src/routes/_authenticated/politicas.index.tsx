@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Building2, FileText, Gavel, Scale, Search } from "lucide-react";
+import { ArrowRight, FileText, Gavel, Scale, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AppLayout } from "@/components/app-layout";
@@ -49,14 +49,14 @@ function PoliciesPage() {
           </span>
           <h1 className="mt-2 text-3xl font-bold tracking-tight">Políticas</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Riesgo · Legales · Cancelación · Mutual Celesol
+            Criterios y reglas: Riesgo · Legales · Cancelación
           </p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
             <Link to="/politicas" hash="riesgo" className="flex items-center gap-2 rounded-lg border border-border p-4 font-medium hover:bg-secondary"><Scale className="size-5 text-brand" /> Políticas de riesgo <ArrowRight className="ml-auto size-4" /></Link>
             <Link to="/politicas/legales" className="flex items-center gap-2 rounded-lg border border-border p-4 font-medium hover:bg-secondary"><Gavel className="size-5 text-brand" /> Políticas de legales <ArrowRight className="ml-auto size-4" /></Link>
             <Link to="/politicas/cancelacion" className="flex items-center gap-2 rounded-lg border border-border p-4 font-medium hover:bg-secondary"><FileText className="size-5 text-brand" /> Políticas de cancelación <ArrowRight className="ml-auto size-4" /></Link>
-            <Link to="/politicas/celesol" search={{}} className="flex items-center gap-2 rounded-lg border border-border p-4 font-medium hover:bg-secondary"><Building2 className="size-5 text-brand" /> Mutual Celesol <ArrowRight className="ml-auto size-4" /></Link>
           </div>
+          <div className="mt-4 text-sm text-muted-foreground"><span className="font-medium text-foreground">Pendientes de documentar:</span> Financiamiento a otras mutuales · Contratación</div>
         </div>
       </section>
 
